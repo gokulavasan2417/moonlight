@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
@@ -35,7 +36,7 @@ app.use(helmet({
   crossOriginResourcePolicy: false, // Allow loading uploaded images/assets cross-origin
 }));
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => callback(null, true),
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -44,6 +45,42 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
+
+// Serverless DB Connection & Auto-Seed middleware
+let isDbConnecting = false;
+let seedExecuted = false;
+
+const ensureDbConnected = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+  if (!isDbConnecting) {
+    isDbConnecting = true;
+    try {
+      await connectDB();
+      if (!seedExecuted) {
+        seedExecuted = true;
+        seedDatabase().catch((e) => console.error('Seed error:', e));
+      }
+    } finally {
+      isDbConnecting = false;
+    }
+  } else {
+    while (mongoose.connection.readyState !== 1) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+  }
+};
+
+app.use(async (req, res, next) => {
+  try {
+    await ensureDbConnected();
+    next();
+  } catch (err) {
+    console.error('Database connection error in request:', err);
+    res.status(500).json({ success: false, message: 'Database connection failed: ' + err.message });
+  }
+});
 
 // Rate limiting for public APIs
 const apiLimiter = rateLimit({
@@ -92,16 +129,23 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    system: 'Moon Light Villa Reservation & ERP API Server',
+    message: 'Backend API is running. Access endpoints via /api/*',
+    timestamp: new Date()
+  });
+});
+
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
 
-// Start Server & Connect DB
+// Start Server & Connect DB (for local / continuous hosting)
 const startServer = async () => {
   try {
     await connectDB();
-    
-    // Automatically seed database if empty
     await seedDatabase();
 
     app.listen(PORT, () => {
@@ -117,4 +161,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;

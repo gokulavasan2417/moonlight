@@ -4,6 +4,11 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 let mongod = null;
 
 export const connectDB = async () => {
+  // Reuse existing connection in serverless warm invocations
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
   const customUri = process.env.MONGODB_URI;
 
   if (customUri) {
@@ -14,9 +19,17 @@ export const connectDB = async () => {
       console.log(` MongoDB Connected (Custom URI): ${conn.connection.host}`);
       return conn;
     } catch (err) {
-      console.warn(` Failed connecting to provided MONGODB_URI (${customUri}): ${err.message}`);
+      console.warn(` Failed connecting to provided MONGODB_URI: ${err.message}`);
+      if (process.env.VERCEL) {
+        throw new Error(`Failed connecting to MONGODB_URI on Vercel: ${err.message}`);
+      }
       console.log(' Falling back to embedded MongoMemoryServer for reliable execution...');
     }
+  }
+
+  // If deployed on Vercel without MONGODB_URI, halt with actionable message
+  if (process.env.VERCEL) {
+    throw new Error('MONGODB_URI environment variable is required when deployed on Vercel.');
   }
 
   // Attempt standard local connection first
