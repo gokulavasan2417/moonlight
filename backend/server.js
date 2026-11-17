@@ -129,6 +129,23 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Database seed & sync endpoint for one-click Atlas setup / inventory refresh
+app.get('/api/seed', async (req, res) => {
+  try {
+    const isForce = req.query.force === 'true';
+    const stats = await seedDatabase(isForce);
+    res.json({
+      success: true,
+      message: 'Database seeded and synced successfully on MongoDB Atlas!',
+      stats,
+      timestamp: new Date()
+    });
+  } catch (err) {
+    console.error('Seed endpoint error:', err);
+    res.status(500).json({ success: false, message: 'Seeding failed: ' + err.message });
+  }
+});
+
 app.get('/', (req, res) => {
   res.json({
     status: 'online',

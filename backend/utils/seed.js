@@ -436,353 +436,411 @@ export const ensureMultiLocationsAnd120Rooms = async () => {
   }
 };
 
-export const seedDatabase = async () => {
+export const seedDatabase = async (force = false) => {
   try {
-    const userCount = await User.countDocuments();
-    if (userCount > 0) {
-      console.log(' Database already initialized with existing users.');
-      // Do not auto-recreate inventory if users exist, allowing custom villa/location setup
-      return;
+    if (force) {
+      console.log(' Force seed requested. Purging existing demo collections...');
+      await Promise.allSettled([
+        User.deleteMany({}),
+        Role.deleteMany({}),
+        Villa.deleteMany({}),
+        RoomCategory.deleteMany({}),
+        Room.deleteMany({}),
+        PropertyLocation.deleteMany({}),
+        WebsiteSettings.deleteMany({}),
+        Banner.deleteMany({}),
+        GalleryItem.deleteMany({}),
+        Testimonial.deleteMany({}),
+        SpecialOffer.deleteMany({}),
+        Customer.deleteMany({}),
+        Reservation.deleteMany({}),
+        Coupon.deleteMany({}),
+        Lead.deleteMany({}),
+        FollowUp.deleteMany({}),
+        Quotation.deleteMany({}),
+        Invoice.deleteMany({}),
+        Payment.deleteMany({}),
+        Vendor.deleteMany({}),
+        VendorBill.deleteMany({}),
+        Payout.deleteMany({}),
+        Expense.deleteMany({}),
+        Notification.deleteMany({})
+      ]);
     }
 
-    console.log(' Initializing MOON LIGHT VILLA seed data...');
+    console.log(' Initializing / verifying MOON LIGHT VILLA seed data...');
 
-    // 1. Roles
-    const rolesData = [
-      { name: 'Super Admin', description: 'Full root access to all system modules and settings', isSystem: true },
-      { name: 'Administrator', description: 'Administrative control over reservations, finance, and staff', isSystem: true },
-      { name: 'Manager', description: 'Daily operations, inventory, and staff oversight', isSystem: true },
-      { name: 'Receptionist', description: 'Front desk, check-in, check-out, and guest bookings', isSystem: true },
-      { name: 'Sales Executive', description: 'CRM leads, enquiries, quotations, and conversions', isSystem: true },
-      { name: 'Accountant', description: 'Billing, invoices, payouts, expenses, and GST reporting', isSystem: true },
-      { name: 'Housekeeping Staff', description: 'Room cleaning and maintenance tracking', isSystem: true },
-    ];
-    await Role.insertMany(rolesData);
+    // 1. Roles & Staff Users
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      const rolesData = [
+        { name: 'Super Admin', description: 'Full root access to all system modules and settings', isSystem: true },
+        { name: 'Administrator', description: 'Administrative control over reservations, finance, and staff', isSystem: true },
+        { name: 'Manager', description: 'Daily operations, inventory, and staff oversight', isSystem: true },
+        { name: 'Receptionist', description: 'Front desk, check-in, check-out, and guest bookings', isSystem: true },
+        { name: 'Sales Executive', description: 'CRM leads, enquiries, quotations, and conversions', isSystem: true },
+        { name: 'Accountant', description: 'Billing, invoices, payouts, expenses, and GST reporting', isSystem: true },
+        { name: 'Housekeeping Staff', description: 'Room cleaning and maintenance tracking', isSystem: true },
+      ];
+      await Role.deleteMany({});
+      await Role.insertMany(rolesData);
 
-    // 2. Staff Users
-    const users = await User.create([
-      {
-        name: 'Aarav Singhania',
-        email: 'admin@moonlightvilla.com',
-        password: 'password123',
-        phone: '+91 98200 11111',
-        role: 'Super Admin',
-        isActive: true
-      },
-      {
-        name: 'Rohan Deshmukh',
-        email: 'manager@moonlightvilla.com',
-        password: 'password123',
-        phone: '+91 98200 22222',
-        role: 'Manager',
-        isActive: true
-      },
-      {
-        name: 'Priya Sharma',
-        email: 'reception@moonlightvilla.com',
-        password: 'password123',
-        phone: '+91 98200 33333',
-        role: 'Receptionist',
-        isActive: true
-      },
-      {
-        name: 'Sameer Verma',
-        email: 'sales@moonlightvilla.com',
-        password: 'password123',
-        phone: '+91 98200 44444',
-        role: 'Sales Executive',
-        isActive: true
-      },
-      {
-        name: 'Meera Iyer',
-        email: 'accounts@moonlightvilla.com',
-        password: 'password123',
-        phone: '+91 98200 55555',
-        role: 'Accountant',
-        isActive: true
-      }
-    ]);
+      await User.create([
+        {
+          name: 'Aarav Singhania',
+          email: 'admin@moonlightvilla.com',
+          password: 'password123',
+          phone: '+91 98200 11111',
+          role: 'Super Admin',
+          isActive: true
+        },
+        {
+          name: 'Rohan Deshmukh',
+          email: 'manager@moonlightvilla.com',
+          password: 'password123',
+          phone: '+91 98200 22222',
+          role: 'Manager',
+          isActive: true
+        },
+        {
+          name: 'Priya Sharma',
+          email: 'reception@moonlightvilla.com',
+          password: 'password123',
+          phone: '+91 98200 33333',
+          role: 'Receptionist',
+          isActive: true
+        },
+        {
+          name: 'Sameer Verma',
+          email: 'sales@moonlightvilla.com',
+          password: 'password123',
+          phone: '+91 98200 44444',
+          role: 'Sales Executive',
+          isActive: true
+        },
+        {
+          name: 'Meera Iyer',
+          email: 'accounts@moonlightvilla.com',
+          password: 'password123',
+          phone: '+91 98200 55555',
+          role: 'Accountant',
+          isActive: true
+        }
+      ]);
+      console.log(' Staff login credentials and roles verified.');
+    }
 
-    console.log(' Staff login credentials and roles verified.');
-    console.log(' Admin credentials: admin@moonlightvilla.com / password123');
+    // 2. Base Villas and Categories if missing
+    let mainVilla = await Villa.findOne({ slug: 'moon-light-villa-estate' });
+    if (!mainVilla) {
+      mainVilla = await Villa.create({
+        name: 'Moon Light Villa Estate',
+        slug: 'moon-light-villa-estate',
+        tagline: 'Panoramic 5-Bedroom Hilltop Private Sanctuary',
+        description: 'Perched atop an exclusive hill in Lonavala, Moon Light Villa Estate is an architectural masterpiece designed for discerning travelers. Featuring 5 lavish master suites, a temperature-controlled infinity glass pool overlooking whispering pine valleys, expansive sun decks, private cinema lounge, and dedicated butler service.',
+        shortDescription: 'Ultra-luxury 5-bedroom private estate with infinity pool, panoramic valley vistas, and bespoke culinary concierge.',
+        location: {
+          address: 'Plot 42, Moon Light Valley, Whispering Pines Hill, Old Khandala Road',
+          city: 'Lonavala',
+          state: 'Maharashtra',
+          pincode: '410401'
+        },
+        amenities: [
+          'Heated Infinity Glass Pool',
+          'Private Dedicated Chef & Butler',
+          'Panoramic Valley Horizon Views',
+          'Private Jacuzzi in Master Suites',
+          'High-Speed Wi-Fi (1 Gbps Fiber)',
+          'Dolby Atmos Home Cinema Lounge',
+          'Landscaped Sunset Lawn & Gazebo',
+          'BBQ & Bonfire Firepit Lounge',
+          '24/7 Gated Security & Valet Parking',
+          'Full Power Backup & EV Charging'
+        ],
+        features: [
+          { title: 'Panoramic Infinity Pool', description: 'Overlooking mist-covered valleys with ambient mood lighting.', icon: 'pool' },
+          { title: 'Bespoke Private Chef', description: 'Tailored 5-course gourmet dining with organic fresh ingredients.', icon: 'chef' },
+          { title: '5 Master Suites', description: 'Italian marble en-suite bathrooms, private balconies, king posturepedic beds.', icon: 'bed' },
+          { title: 'Sunset Gazebo & Firepit', description: 'Ideal for stargazing, acoustic music, and intimate gatherings.', icon: 'sun' }
+        ],
+        images: [
+          { url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80', caption: 'Villa Grand Exterior & Infinity Pool', isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80', caption: 'Twilight Sunset Deck', isPrimary: false },
+          { url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1600&q=80', caption: 'Living Lounge with Floor-to-Ceiling Glass', isPrimary: false },
+          { url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1600&q=80', caption: 'Presidential Master Suite', isPrimary: false },
+          { url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1600&q=80', caption: 'Royal En-Suite Marble Bath with Mountain View', isPrimary: false }
+        ],
+        specs: {
+          bedrooms: 5,
+          bathrooms: 6,
+          privatePool: true,
+          maxGuests: 16,
+          squareFeet: 9200
+        },
+        pricing: {
+          basePricePerNight: 45000,
+          weekendPricePerNight: 55000,
+          cleaningFee: 3000,
+          securityDeposit: 15000,
+          taxPercentage: 18
+        },
+        rules: [
+          'Check-in at 2:00 PM, Check-out at 11:00 AM',
+          'Valid Government photo ID mandatory for all guests at check-in',
+          'Smoking permitted only in designated outdoor balconies & garden',
+          'Loud music outdoors restricted after 10:00 PM as per local council guidelines',
+          'Refundable security deposit collected at check-in'
+        ],
+        isFeatured: true,
+        isActive: true,
+        displayOrder: 1
+      });
+    }
 
-    // Populate demo inventory/transactions by default unless explicitly disabled with SEED_DEMO_DATA=false
-    if (process.env.SEED_DEMO_DATA !== 'false') {
-      console.log(' Populating demo inventory and transactions...');
-      // 3. Villas
-      const mainVilla = await Villa.create({
-      name: 'Moon Light Villa Estate',
-      slug: 'moon-light-villa-estate',
-      tagline: 'Panoramic 5-Bedroom Hilltop Private Sanctuary',
-      description: 'Perched atop an exclusive hill in Lonavala, Moon Light Villa Estate is an architectural masterpiece designed for discerning travelers. Featuring 5 lavish master suites, a temperature-controlled infinity glass pool overlooking whispering pine valleys, expansive sun decks, private cinema lounge, and dedicated butler service.',
-      shortDescription: 'Ultra-luxury 5-bedroom private estate with infinity pool, panoramic valley vistas, and bespoke culinary concierge.',
-      location: {
-        address: 'Plot 42, Moon Light Valley, Whispering Pines Hill, Old Khandala Road',
-        city: 'Lonavala',
-        state: 'Maharashtra',
-        pincode: '410401'
-      },
-      amenities: [
-        'Heated Infinity Glass Pool',
-        'Private Dedicated Chef & Butler',
-        'Panoramic Valley Horizon Views',
-        'Private Jacuzzi in Master Suites',
-        'High-Speed Wi-Fi (1 Gbps Fiber)',
-        'Dolby Atmos Home Cinema Lounge',
-        'Landscaped Sunset Lawn & Gazebo',
-        'BBQ & Bonfire Firepit Lounge',
-        '24/7 Gated Security & Valet Parking',
-        'Full Power Backup & EV Charging'
-      ],
-      features: [
-        { title: 'Panoramic Infinity Pool', description: 'Overlooking mist-covered valleys with ambient mood lighting.', icon: 'pool' },
-        { title: 'Bespoke Private Chef', description: 'Tailored 5-course gourmet dining with organic fresh ingredients.', icon: 'chef' },
-        { title: '5 Master Suites', description: 'Italian marble en-suite bathrooms, private balconies, king posturepedic beds.', icon: 'bed' },
-        { title: 'Sunset Gazebo & Firepit', description: 'Ideal for stargazing, acoustic music, and intimate gatherings.', icon: 'sun' }
-      ],
-      images: [
-        { url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80', caption: 'Villa Grand Exterior & Infinity Pool', isPrimary: true },
-        { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80', caption: 'Twilight Sunset Deck', isPrimary: false },
-        { url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1600&q=80', caption: 'Living Lounge with Floor-to-Ceiling Glass', isPrimary: false },
-        { url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1600&q=80', caption: 'Presidential Master Suite', isPrimary: false },
-        { url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1600&q=80', caption: 'Royal En-Suite Marble Bath with Mountain View', isPrimary: false }
-      ],
-      specs: {
-        bedrooms: 5,
-        bathrooms: 6,
-        privatePool: true,
-        maxGuests: 16,
-        squareFeet: 9200
-      },
-      pricing: {
-        basePricePerNight: 45000,
-        weekendPricePerNight: 55000,
-        cleaningFee: 3000,
-        securityDeposit: 15000,
-        taxPercentage: 18
-      },
-      rules: [
-        'Check-in at 2:00 PM, Check-out at 11:00 AM',
-        'Valid Government photo ID mandatory for all guests at check-in',
-        'Smoking permitted only in designated outdoor balconies & garden',
-        'Loud music outdoors restricted after 10:00 PM as per local council guidelines',
-        'Refundable security deposit collected at check-in'
-      ],
-      isFeatured: true,
-      isActive: true,
-      displayOrder: 1
-    });
+    let chaletVilla = await Villa.findOne({ slug: 'moon-light-celestial-chalet' });
+    if (!chaletVilla) {
+      chaletVilla = await Villa.create({
+        name: 'Moon Light Celestial Chalet',
+        slug: 'moon-light-celestial-chalet',
+        tagline: '3-Bedroom Scandinavian Wood & Glass Villa',
+        description: 'A cozy yet grand sanctuary nestled amidst pine groves. Featuring vaulted timber ceilings, floor-to-ceiling glass walls, plunge pool, and private bonfire deck.',
+        shortDescription: 'Intimate 3-bedroom luxury retreat with private plunge pool and mountain views.',
+        location: {
+          address: 'Upper Pine Ridge, Moon Light Valley, Lonavala',
+          city: 'Lonavala',
+          state: 'Maharashtra',
+          pincode: '410401'
+        },
+        amenities: [
+          'Private Temperature Plunge Pool',
+          'Timber Deck & Fireplace',
+          'Mountain View Balconies',
+          'Gourmet Breakfast Included',
+          'High-Speed Wi-Fi',
+          'Smart Entertainment System'
+        ],
+        specs: {
+          bedrooms: 3,
+          bathrooms: 4,
+          privatePool: true,
+          maxGuests: 10,
+          squareFeet: 5400
+        },
+        images: [
+          { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=80', caption: 'Chalet Pine Ridge Facade', isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80', caption: 'Plunge Pool & Timber Sunbed', isPrimary: false }
+        ],
+        pricing: {
+          basePricePerNight: 28000,
+          weekendPricePerNight: 35000,
+          cleaningFee: 2000,
+          securityDeposit: 10000,
+          taxPercentage: 18
+        },
+        isFeatured: true,
+        isActive: true,
+        displayOrder: 2
+      });
+    }
 
-    const chaletVilla = await Villa.create({
-      name: 'Moon Light Celestial Chalet',
-      slug: 'moon-light-celestial-chalet',
-      tagline: '3-Bedroom Scandinavian Wood & Glass Villa',
-      description: 'A cozy yet grand sanctuary nestled amidst pine groves. Featuring vaulted timber ceilings, floor-to-ceiling glass walls, plunge pool, and private bonfire deck.',
-      shortDescription: 'Intimate 3-bedroom luxury retreat with private plunge pool and mountain views.',
-      location: {
-        address: 'Upper Pine Ridge, Moon Light Valley, Lonavala',
-        city: 'Lonavala',
-        state: 'Maharashtra',
-        pincode: '410401'
-      },
-      amenities: [
-        'Private Temperature Plunge Pool',
-        'Timber Deck & Fireplace',
-        'Mountain View Balconies',
-        'Gourmet Breakfast Included',
-        'High-Speed Wi-Fi',
-        'Smart Entertainment System'
-      ],
-      specs: {
-        bedrooms: 3,
-        bathrooms: 4,
-        privatePool: true,
-        maxGuests: 10,
-        squareFeet: 5400
-      },
-      images: [
-        { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=80', caption: 'Chalet Pine Ridge Facade', isPrimary: true },
-        { url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80', caption: 'Plunge Pool & Timber Sunbed', isPrimary: false }
-      ],
-      pricing: {
-        basePricePerNight: 28000,
-        weekendPricePerNight: 35000,
-        cleaningFee: 2000,
-        securityDeposit: 10000,
-        taxPercentage: 18
-      },
-      isFeatured: true,
-      isActive: true,
-      displayOrder: 2
-    });
+    // Room Categories for Main Villa
+    let catMaster = await RoomCategory.findOne({ name: 'Presidential Master Suite' });
+    if (!catMaster) {
+      catMaster = await RoomCategory.create({
+        name: 'Presidential Master Suite',
+        villa: mainVilla._id,
+        description: 'Expansive penthouse suite with private wrap-around terrace, jacuzzi, and king canopy bed.',
+        maxAdults: 2,
+        maxChildren: 2,
+        basePrice: 16000,
+        weekendPrice: 19000,
+        extraGuestCharge: 2000,
+        amenities: ['Private Jacuzzi', 'Valley View Terrace', 'King Bed', 'Espresso Machine', 'Walk-in Wardrobe']
+      });
+    }
 
-    // 4. Room Categories for Main Villa
-    const catMaster = await RoomCategory.create({
-      name: 'Presidential Master Suite',
-      villa: mainVilla._id,
-      description: 'Expansive penthouse suite with private wrap-around terrace, jacuzzi, and king canopy bed.',
-      maxAdults: 2,
-      maxChildren: 2,
-      basePrice: 16000,
-      weekendPrice: 19000,
-      extraGuestCharge: 2000,
-      amenities: ['Private Jacuzzi', 'Valley View Terrace', 'King Bed', 'Espresso Machine', 'Walk-in Wardrobe']
-    });
+    let catPool = await RoomCategory.findOne({ name: 'Infinity Pool View Suite' });
+    if (!catPool) {
+      catPool = await RoomCategory.create({
+        name: 'Infinity Pool View Suite',
+        villa: mainVilla._id,
+        description: 'Direct step-out access to the heated pool terrace with floor-to-ceiling glass views.',
+        maxAdults: 2,
+        maxChildren: 1,
+        basePrice: 12000,
+        weekendPrice: 15000,
+        extraGuestCharge: 1500,
+        amenities: ['Pool Access', 'Italian Marble Shower', 'Lounge Seating', 'Smart TV']
+      });
+    }
 
-    const catPool = await RoomCategory.create({
-      name: 'Infinity Pool View Suite',
-      villa: mainVilla._id,
-      description: 'Direct step-out access to the heated pool terrace with floor-to-ceiling glass views.',
-      maxAdults: 2,
-      maxChildren: 1,
-      basePrice: 12000,
-      weekendPrice: 15000,
-      extraGuestCharge: 1500,
-      amenities: ['Pool Access', 'Italian Marble Shower', 'Lounge Seating', 'Smart TV']
-    });
+    let catGarden = await RoomCategory.findOne({ name: 'Royal Garden Chamber' });
+    if (!catGarden) {
+      catGarden = await RoomCategory.create({
+        name: 'Royal Garden Chamber',
+        villa: mainVilla._id,
+        description: 'Serene bedroom overlooking the manicured Japanese Zen garden and exotic flora.',
+        maxAdults: 2,
+        maxChildren: 1,
+        basePrice: 10000,
+        weekendPrice: 12500,
+        extraGuestCharge: 1500,
+        amenities: ['Garden Patio', 'Plush Bedding', 'Rain Shower', 'Work Desk']
+      });
+    }
 
-    const catGarden = await RoomCategory.create({
-      name: 'Royal Garden Chamber',
-      villa: mainVilla._id,
-      description: 'Serene bedroom overlooking the manicured Japanese Zen garden and exotic flora.',
-      maxAdults: 2,
-      maxChildren: 1,
-      basePrice: 10000,
-      weekendPrice: 12500,
-      extraGuestCharge: 1500,
-      amenities: ['Garden Patio', 'Plush Bedding', 'Rain Shower', 'Work Desk']
-    });
-
-    // 5. Multi-Location & 120 Rooms Inventory Setup
+    // 3. Multi-Location & 120 Rooms Inventory Setup
     await ensureMultiLocationsAnd120Rooms();
 
-    // 6. Website Settings
-    await WebsiteSettings.create({
-      siteName: 'MOON LIGHT VILLA',
-      tagline: 'Luxury Private Sanctuary & Panoramic Hilltop Estate',
-      contactEmail: 'concierge@moonlightvilla.com',
-      contactPhone: '+91 98200 12345',
-      whatsappNumber: '+91 98200 12345',
-      address: 'Plot 42, Moon Light Valley, Whispering Pines Hill, Old Khandala Road, Lonavala, MH 410401',
-      socialLinks: {
-        instagram: 'https://instagram.com/moonlightvilla',
-        facebook: 'https://facebook.com/moonlightvilla',
-        youtube: 'https://youtube.com/@moonlightvilla'
-      },
-      heroBanner: {
-        headline: 'Where Timeless Elegance Meets Serene Horizons',
-        subheadline: 'An exclusive private hilltop retreat offering panoramic valley vistas, an infinity glass pool, and bespoke luxury hospitality.',
-        ctaText: 'Reserve Your Sanctuary',
-        backgroundImage: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1920&q=80'
-      }
-    });
+    // 4. Website Settings
+    let websiteSettings = await WebsiteSettings.findOne();
+    if (!websiteSettings) {
+      await WebsiteSettings.create({
+        siteName: 'MOON LIGHT VILLA',
+        tagline: 'Luxury Private Sanctuary & Panoramic Hilltop Estate',
+        contactEmail: 'concierge@moonlightvilla.com',
+        contactPhone: '+91 98200 12345',
+        whatsappNumber: '+91 98200 12345',
+        address: 'Plot 42, Moon Light Valley, Whispering Pines Hill, Old Khandala Road, Lonavala, MH 410401',
+        socialLinks: {
+          instagram: 'https://instagram.com/moonlightvilla',
+          facebook: 'https://facebook.com/moonlightvilla',
+          youtube: 'https://youtube.com/@moonlightvilla'
+        },
+        heroBanner: {
+          headline: 'Where Timeless Elegance Meets Serene Horizons',
+          subheadline: 'An exclusive private hilltop retreat offering panoramic valley vistas, an infinity glass pool, and bespoke luxury hospitality.',
+          ctaText: 'Reserve Your Sanctuary',
+          backgroundImage: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1920&q=80'
+        }
+      });
+    }
 
-    // 7. Banners
-    await Banner.create([
-      {
-        title: 'Heated Infinity Glass Pool',
-        subtitle: 'Swim above the clouds with panoramic horizon vistas.',
-        imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80',
-        badge: 'Signature Amenity',
-        ctaText: 'Explore Estate',
-        ctaLink: '/villas',
-        displayOrder: 1
-      },
-      {
-        title: 'Bespoke Gourmet Culinary Art',
-        subtitle: 'Handcrafted menus by our executive private chefs.',
-        imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80',
-        badge: 'Private Dining',
-        ctaText: 'View Menus',
-        ctaLink: '/about',
-        displayOrder: 2
-      }
-    ]);
+    // 5. Banners
+    const bannerCount = await Banner.countDocuments();
+    if (bannerCount === 0) {
+      await Banner.create([
+        {
+          title: 'Heated Infinity Glass Pool',
+          subtitle: 'Swim above the clouds with panoramic horizon vistas.',
+          imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80',
+          badge: 'Signature Amenity',
+          ctaText: 'Explore Estate',
+          ctaLink: '/villas',
+          displayOrder: 1
+        },
+        {
+          title: 'Bespoke Gourmet Culinary Art',
+          subtitle: 'Handcrafted menus by our executive private chefs.',
+          imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80',
+          badge: 'Private Dining',
+          ctaText: 'View Menus',
+          ctaLink: '/about',
+          displayOrder: 2
+        }
+      ]);
+    }
 
-    // 8. Gallery Items
-    await GalleryItem.create([
-      { title: 'Estate Exterior at Dusk', category: 'Architecture & Exterior', imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80', displayOrder: 1 },
-      { title: 'Valley Infinity Glass Pool', category: 'Infinity Pool', imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', displayOrder: 2 },
-      { title: 'The Penthouse Master Suite', category: 'Master Suites', imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', displayOrder: 3 },
-      { title: 'Grand Architectural Living Salon', category: 'Living & Lounge', imageUrl: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80', displayOrder: 4 },
-      { title: 'Candlelight Deck Dining', category: 'Dining & Bar', imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80', displayOrder: 5 },
-      { title: 'Panoramic Hill Sunset Horizon', category: 'Scenic Horizons', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', displayOrder: 6 }
-    ]);
+    // 6. Gallery Items
+    const galleryCount = await GalleryItem.countDocuments();
+    if (galleryCount === 0) {
+      await GalleryItem.create([
+        { title: 'Estate Exterior at Dusk', category: 'Architecture & Exterior', imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80', displayOrder: 1 },
+        { title: 'Valley Infinity Glass Pool', category: 'Infinity Pool', imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', displayOrder: 2 },
+        { title: 'The Penthouse Master Suite', category: 'Master Suites', imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80', displayOrder: 3 },
+        { title: 'Grand Architectural Living Salon', category: 'Living & Lounge', imageUrl: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80', displayOrder: 4 },
+        { title: 'Candlelight Deck Dining', category: 'Dining & Bar', imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80', displayOrder: 5 },
+        { title: 'Panoramic Hill Sunset Horizon', category: 'Scenic Horizons', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', displayOrder: 6 }
+      ]);
+    }
 
-    // 9. Testimonials
-    await Testimonial.create([
-      {
-        guestName: 'Vikram & Radhika Oberoi',
-        location: 'South Mumbai',
-        rating: 5,
-        stayDate: 'October 2026',
-        reviewText: 'Moon Light Villa exceeded every expectation. The infinity pool overlooking the foggy valley at sunrise was heavenly. The chef prepared an exquisite 5-course coastal dinner. Flawless hospitality!',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
-      },
-      {
-        guestName: 'Kabir Singhal',
-        location: 'Pune',
-        rating: 5,
-        stayDate: 'September 2026',
-        reviewText: 'We celebrated our 10th anniversary with family here. The privacy, Dolby Atmos cinema lounge, and breathtaking grounds made it unforgettable. Looking forward to our next visit!',
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
-      },
-      {
-        guestName: 'Ananya Deshpande',
-        location: 'Bangalore',
-        rating: 5,
-        stayDate: 'August 2026',
-        reviewText: 'The attention to detail is world-class. From the scented towels on arrival to the personalized breakfast by the pool, Moon Light Villa stands in a league of its own.',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80'
-      }
-    ]);
+    // 7. Testimonials
+    const testimonialCount = await Testimonial.countDocuments();
+    if (testimonialCount === 0) {
+      await Testimonial.create([
+        {
+          guestName: 'Vikram & Radhika Oberoi',
+          location: 'South Mumbai',
+          rating: 5,
+          stayDate: 'October 2026',
+          reviewText: 'Moon Light Villa exceeded every expectation. The infinity pool overlooking the foggy valley at sunrise was heavenly. The chef prepared an exquisite 5-course coastal dinner. Flawless hospitality!',
+          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+        },
+        {
+          guestName: 'Kabir Singhal',
+          location: 'Pune',
+          rating: 5,
+          stayDate: 'September 2026',
+          reviewText: 'We celebrated our 10th anniversary with family here. The privacy, Dolby Atmos cinema lounge, and breathtaking grounds made it unforgettable. Looking forward to our next visit!',
+          avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+        },
+        {
+          guestName: 'Ananya Deshpande',
+          location: 'Bangalore',
+          rating: 5,
+          stayDate: 'August 2026',
+          reviewText: 'The attention to detail is world-class. From the scented towels on arrival to the personalized breakfast by the pool, Moon Light Villa stands in a league of its own.',
+          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80'
+        }
+      ]);
+    }
 
-    // 10. Special Offers & Coupons
-    await SpecialOffer.create([
-      {
-        title: 'Winter Luxury Retreat',
-        tagline: 'Complimentary Chef BBQ & Bonfire Experience',
-        discountText: '20% OFF',
-        description: 'Book 3 or more nights this winter and receive a 20% privilege discount plus an evening private poolside barbecue.',
-        couponCode: 'WINTER20',
-        validUntil: new Date('2026-12-31')
-      },
-      {
-        title: 'Midweek Rejuvenation',
-        tagline: 'Escape Monday through Thursday',
-        discountText: 'FLAT ₹10,000 OFF',
-        description: 'Unwind amidst tranquil hilltop nature. Valid for full villa bookings from Monday to Thursday.',
-        couponCode: 'MIDWEEK10K',
-        validUntil: new Date('2026-11-30')
-      }
-    ]);
+    // 8. Special Offers & Coupons
+    const offerCount = await SpecialOffer.countDocuments();
+    if (offerCount === 0) {
+      await SpecialOffer.create([
+        {
+          title: 'Winter Luxury Retreat',
+          tagline: 'Complimentary Chef BBQ & Bonfire Experience',
+          discountText: '20% OFF',
+          description: 'Book 3 or more nights this winter and receive a 20% privilege discount plus an evening private poolside barbecue.',
+          couponCode: 'WINTER20',
+          validUntil: new Date('2026-12-31')
+        },
+        {
+          title: 'Midweek Rejuvenation',
+          tagline: 'Escape Monday through Thursday',
+          discountText: 'FLAT ₹10,000 OFF',
+          description: 'Unwind amidst tranquil hilltop nature. Valid for full villa bookings from Monday to Thursday.',
+          couponCode: 'MIDWEEK10K',
+          validUntil: new Date('2026-11-30')
+        }
+      ]);
+    }
 
-    await Coupon.create([
-      {
-        code: 'WELCOME10',
-        title: 'Welcome Privilege Discount',
-        description: '10% off on first direct reservation',
-        discountType: 'Percentage',
-        discountValue: 10,
-        minBookingAmount: 30000,
-        maxDiscountAmount: 8000,
-        validFrom: new Date('2026-01-01'),
-        validUntil: new Date('2027-12-31')
-      },
-      {
-        code: 'LUXURY2026',
-        title: 'VIP Estate Privilege',
-        description: 'Flat ₹5,000 deduction on full villa booking',
-        discountType: 'Fixed',
-        discountValue: 5000,
-        minBookingAmount: 50000,
-        validFrom: new Date('2026-01-01'),
-        validUntil: new Date('2027-12-31')
-      }
-    ]);
+    const couponCount = await Coupon.countDocuments();
+    if (couponCount === 0) {
+      await Coupon.create([
+        {
+          code: 'WELCOME10',
+          title: 'Welcome Privilege Discount',
+          description: '10% off on first direct reservation',
+          discountType: 'Percentage',
+          discountValue: 10,
+          minBookingAmount: 30000,
+          maxDiscountAmount: 8000,
+          validFrom: new Date('2026-01-01'),
+          validUntil: new Date('2027-12-31')
+        },
+        {
+          code: 'LUXURY2026',
+          title: 'VIP Estate Privilege',
+          description: 'Flat ₹5,000 deduction on full villa booking',
+          discountType: 'Fixed',
+          discountValue: 5000,
+          minBookingAmount: 50000,
+          validFrom: new Date('2026-01-01'),
+          validUntil: new Date('2027-12-31')
+        }
+      ]);
+    }
 
-    // 11. Customers
-    const customer1 = await Customer.create({
+    // 11. Customers & Demo Transactions
+    if (process.env.SEED_DEMO_DATA !== 'false') {
+      const reservationCount = await Reservation.countDocuments();
+      if (reservationCount === 0) {
+        console.log(' Seeding demo reservations, invoices, leads, and finance records...');
+        const customer1 = await Customer.create({
       fullName: 'Vikram Oberoi',
       email: 'vikram.oberoi@example.com',
       phone: '+91 98201 99991',
@@ -1115,17 +1173,34 @@ export const seedDatabase = async () => {
     });
 
     // 17. Initial system notification
-    await Notification.create({
-      title: 'Moon Light Villa ERP Online',
-      message: 'System loaded successfully with complete luxury villa inventory, CRM leads, and reservation workflows.',
-      type: 'system',
-      priority: 'normal'
-    });
+        await Notification.create({
+          title: 'Moon Light Villa ERP Online',
+          message: 'System loaded successfully with complete luxury villa inventory, CRM leads, and reservation workflows.',
+          type: 'system',
+          priority: 'normal'
+        });
 
-      console.log(' MOON LIGHT VILLA demo data created successfully!');
+        console.log(' MOON LIGHT VILLA demo data created successfully!');
+      }
     }
+
+    const stats = {
+      users: await User.countDocuments(),
+      villas: await Villa.countDocuments(),
+      rooms: await Room.countDocuments(),
+      locations: await PropertyLocation.countDocuments(),
+      websiteSettings: await WebsiteSettings.countDocuments(),
+      banners: await Banner.countDocuments(),
+      galleryItems: await GalleryItem.countDocuments(),
+      testimonials: await Testimonial.countDocuments(),
+      reservations: await Reservation.countDocuments(),
+      invoices: await Invoice.countDocuments(),
+    };
+    console.log(' MOON LIGHT VILLA demo data verified successfully!', stats);
+    return stats;
   } catch (err) {
     console.error('Error seeding database:', err);
+    throw err;
   }
 };
 
