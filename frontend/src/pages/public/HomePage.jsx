@@ -971,11 +971,26 @@ const AMENITIES = [
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [villas, setVillas] = useState([]);
+  const [villas, setVillas] = useState(() => {
+    try {
+      const c = sessionStorage.getItem('mlv_villas');
+      return c ? JSON.parse(c) : [];
+    } catch { return []; }
+  });
   const [banners, setBanners] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [specialOffers, setSpecialOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [testimonials, setTestimonials] = useState(() => {
+    try {
+      const c = sessionStorage.getItem('mlv_testimonials');
+      return c ? JSON.parse(c) : [];
+    } catch { return []; }
+  });
+  const [specialOffers, setSpecialOffers] = useState(() => {
+    try {
+      const c = sessionStorage.getItem('mlv_offers');
+      return c ? JSON.parse(c) : [];
+    } catch { return []; }
+  });
+  const [loading, setLoading] = useState(() => !sessionStorage.getItem('mlv_villas'));
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
   // Fan reveal for the Featured Residences cards
@@ -1021,16 +1036,21 @@ const HomePage = () => {
         if (locsRes.data?.success) {
           setLocations(locsRes.data.locations);
         }
-        if (villasRes.data.success) {
+        if (villasRes.data?.success) {
           setVillas(villasRes.data.villas);
+          try { sessionStorage.setItem('mlv_villas', JSON.stringify(villasRes.data.villas)); } catch {}
           if (villasRes.data.villas.length > 0) {
             setSelectedVilla(villasRes.data.villas[0]._id);
           }
         }
-        if (webDataRes.data.success) {
+        if (webDataRes.data?.success) {
           setBanners(webDataRes.data.banners || []);
           setTestimonials(webDataRes.data.testimonials || []);
           setSpecialOffers(webDataRes.data.specialOffers || []);
+          try {
+            sessionStorage.setItem('mlv_testimonials', JSON.stringify(webDataRes.data.testimonials || []));
+            sessionStorage.setItem('mlv_offers', JSON.stringify(webDataRes.data.specialOffers || []));
+          } catch {}
         }
       } catch (err) {
         console.error('Failed to load homepage data:', err);
@@ -1430,6 +1450,7 @@ const HomePage = () => {
               loop
               muted
               playsInline
+              preload="metadata"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-slate-950/65" />

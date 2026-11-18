@@ -58,7 +58,8 @@ const ensureDbConnected = async () => {
     isDbConnecting = true;
     try {
       await connectDB();
-      if (!seedExecuted) {
+      // On serverless Vercel, skip expensive auto-seeding on every cold-start invocation
+      if (!seedExecuted && !process.env.VERCEL) {
         seedExecuted = true;
         seedDatabase().catch((e) => console.error('Seed error:', e));
       }

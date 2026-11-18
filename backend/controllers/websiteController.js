@@ -2,28 +2,51 @@ import { WebsiteSettings, Banner, GalleryItem, Testimonial, SpecialOffer } from 
 import { Coupon } from '../models/Reservation.js';
 import { createAuditLog } from '../middleware/auth.js';
 
+// In-memory cache for ultra-fast CDN/Edge response
+let cachedPublicData = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 60 * 1000; // 60 seconds
+
+export const invalidateWebsiteCache = () => {
+  cachedPublicData = null;
+  cacheTimestamp = 0;
+};
+
 // @desc Get public website content & settings
 // @route GET /api/website/public-data
 export const getPublicWebsiteData = async (req, res, next) => {
   try {
-    let settings = await WebsiteSettings.findOne();
-    if (!settings) {
-      settings = await WebsiteSettings.create({});
+    const now = Date.now();
+    if (cachedPublicData && (now - cacheTimestamp < CACHE_TTL)) {
+      res.set('Cache-Control', 'public, max-age=15, s-maxage=60, stale-while-revalidate=300');
+      return res.json(cachedPublicData);
     }
 
-    const banners = await Banner.find({ isActive: true }).sort({ displayOrder: 1 });
-    const gallery = await GalleryItem.find().sort({ displayOrder: 1 });
-    const testimonials = await Testimonial.find({ isApproved: true }).sort({ createdAt: -1 });
-    const specialOffers = await SpecialOffer.find({ isActive: true }).sort({ displayOrder: 1 });
+    // Run queries concurrently in parallel with .lean() for maximum speed
+    const [settingsDoc, banners, gallery, testimonials, specialOffers] = await Promise.all([
+      WebsiteSettings.findOne().lean(),
+      Banner.find({ isActive: true }).sort({ displayOrder: 1 }).lean(),
+      GalleryItem.find().sort({ displayOrder: 1 }).lean(),
+      Testimonial.find({ isApproved: true }).sort({ createdAt: -1 }).lean(),
+      SpecialOffer.find({ isActive: true }).sort({ displayOrder: 1 }).lean()
+    ]);
 
-    res.json({
+    const settings = settingsDoc || await WebsiteSettings.create({});
+
+    const responseData = {
       success: true,
       settings,
       banners,
       gallery,
       testimonials,
       specialOffers
-    });
+    };
+
+    cachedPublicData = responseData;
+    cacheTimestamp = now;
+
+    res.set('Cache-Control', 'public, max-age=15, s-maxage=60, stale-while-revalidate=300');
+    res.json(responseData);
   } catch (err) {
     next(err);
   }

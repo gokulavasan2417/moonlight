@@ -5,11 +5,20 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('moonlight_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('moonlight_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   const [token, setToken] = useState(() => localStorage.getItem('moonlight_token'));
-  const [loading, setLoading] = useState(true);
+  // Instant render: Do not block UI if no token exists or if user is already cached locally
+  const [loading, setLoading] = useState(() => {
+    const hasToken = !!localStorage.getItem('moonlight_token');
+    const hasUser = !!localStorage.getItem('moonlight_user');
+    return hasToken && !hasUser;
+  });
 
   useEffect(() => {
     const verifyAuth = async () => {

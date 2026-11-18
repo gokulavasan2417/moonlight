@@ -100,7 +100,9 @@ export const getVillas = async (req, res, next) => {
     const villas = await Villa.find(filter)
       .populate('propertyLocation', 'name code city state')
       .populate('manager', 'name email phone role smartAccessPin')
-      .sort({ displayOrder: 1 });
+      .sort({ displayOrder: 1 })
+      .lean();
+    res.set('Cache-Control', 'public, max-age=15, s-maxage=60, stale-while-revalidate=300');
     res.json({ success: true, count: villas.length, villas });
   } catch (err) {
     next(err);
