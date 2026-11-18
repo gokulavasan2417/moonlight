@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -22,7 +22,8 @@ import {
   ChevronDown,
   Moon,
   Plus,
-  MapPin
+  MapPin,
+  Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -37,6 +38,25 @@ const AdminLayout = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('all');
+  const notificationRef = useRef(null);
+
+  // Close notifications popover on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showNotifications]);
 
   useEffect(() => {
     // If not authenticated, redirect to login
@@ -56,8 +76,8 @@ const AdminLayout = () => {
           setLocations(locRes.data.locations);
         }
         setNotifications([
-          { id: 1, title: 'New Booking Confirmed', message: 'Vikram Oberoi confirmed MLV-2026-X89K2', time: '10m ago' },
-          { id: 2, title: '120 Rooms Operational', message: 'Inventory synced across 3 luxury resort locations', time: 'Just now' }
+          { id: 1, title: 'New Booking Confirmed', message: 'Vikram Oberoi confirmed MLV-2026-X89K2', time: '10m ago', unread: true },
+          { id: 2, title: '120 Rooms Operational', message: 'Inventory synced across 3 luxury resort locations', time: 'Just now', unread: true }
         ]);
       } catch (err) {
         console.warn('Initial layout fetch error:', err.message);
@@ -65,6 +85,13 @@ const AdminLayout = () => {
     };
     if (user) fetchInitData();
   }, [user]);
+
+  const unreadNotificationsCount = notifications.filter(n => n.unread).length;
+
+  const handleMarkAllRead = (e) => {
+    if (e) e.stopPropagation();
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
 
   const navItems = [
     { name: 'Dashboard', path: '/erp/dashboard', icon: LayoutDashboard },
@@ -268,31 +295,64 @@ const AdminLayout = () => {
             </Link>
 
             {/* Notifications Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={notificationRef}>
               <button
+                type="button"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-full text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-colors"
+                className="relative p-2 rounded-full text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Notifications"
               >
                 <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full animate-ping" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full" />
+                {unreadNotificationsCount > 0 && (
+                  <>
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full animate-ping" />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full" />
+                  </>
+                )}
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-4 z-50 text-xs">
+                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-4 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <span className="font-semibold text-slate-200">System Notifications</span>
-                    <span className="text-[10px] text-amber-400">Mark all read</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-slate-200">System Notifications</span>
+                      {unreadNotificationsCount > 0 && (
+                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
+                          {unreadNotificationsCount}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleMarkAllRead}
+                      disabled={unreadNotificationsCount === 0}
+                      className="text-[10px] text-amber-400 hover:text-amber-300 disabled:text-slate-500 disabled:cursor-default font-semibold cursor-pointer transition-colors"
+                    >
+                      {unreadNotificationsCount > 0 ? 'Mark all read' : 'All read'}
+                    </button>
                   </div>
-                  <div className="divide-y divide-slate-800/60 mt-2 max-h-60 overflow-y-auto">
-                    {notifications.map((n) => (
-                      <div key={n.id} className="py-2.5">
-                        <p className="font-medium text-slate-200">{n.title}</p>
-                        <p className="text-slate-400 text-[11px] mt-0.5">{n.message}</p>
-                        <span className="text-[9px] text-slate-500 mt-1 block">{n.time}</span>
-                      </div>
-                    ))}
+                  <div className="divide-y divide-slate-800/60 mt-2 max-h-64 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <p className="py-6 text-center text-slate-500 text-xs">No notifications right now.</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`py-2.5 transition-colors ${
+                            n.unread ? 'bg-amber-500/5 -mx-2 px-2 rounded-lg' : 'opacity-70'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="font-medium text-slate-200">{n.title}</p>
+                            {n.unread && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 mt-1" />
+                            )}
+                          </div>
+                          <p className="text-slate-400 text-[11px] mt-0.5">{n.message}</p>
+                          <span className="text-[9px] text-slate-500 mt-1 block">{n.time}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
