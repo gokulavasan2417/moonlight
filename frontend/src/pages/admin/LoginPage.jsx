@@ -154,7 +154,7 @@ const LoginPage = () => {
         </div>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-xs text-slate-400 hover:text-amber-400 transition-colors">
+          <Link to="/home" className="text-xs text-slate-400 hover:text-amber-400 transition-colors">
             ← Back to Public Website
           </Link>
         </div>

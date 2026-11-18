@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 // Layouts
 import PublicLayout from '../layouts/PublicLayout';
@@ -31,21 +32,42 @@ import ExpenseManagement from '../modules/ExpenseManagement';
 import StaffManagement from '../modules/StaffManagement';
 import ReportsManagement from '../modules/ReportsManagement';
 
+/**
+ * ErpEntry: Determines ERP entry routing based on authentication state.
+ * When the app root is opened, user lands on ERP portal first.
+ */
+const ErpEntry = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-amber-500/30 border-t-amber-400 animate-spin" />
+      </div>
+    );
+  }
+
+  return user ? <Navigate to="/erp/dashboard" replace /> : <Navigate to="/erp/login" replace />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Root Entry: When the link is opened first, ERP portal comes first */}
+      <Route path="/" element={<ErpEntry />} />
+
       {/* Public Reservation Website */}
-      <Route path="/" element={<PublicLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="villas" element={<VillasPage />} />
-        <Route path="villas/:slug" element={<VillaDetailPage />} />
-        <Route path="booking" element={<BookingPage />} />
-        <Route path="booking-confirmation/:reference" element={<BookingConfirmationPage />} />
-        <Route path="about" element={<AboutPage />} />
-        <Route path="gallery" element={<GalleryPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="terms" element={<TermsPrivacyPage />} />
-        <Route path="privacy" element={<TermsPrivacyPage />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/villas" element={<VillasPage />} />
+        <Route path="/villas/:slug" element={<VillaDetailPage />} />
+        <Route path="/booking" element={<BookingPage />} />
+        <Route path="/booking-confirmation/:reference" element={<BookingConfirmationPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<TermsPrivacyPage />} />
+        <Route path="/privacy" element={<TermsPrivacyPage />} />
       </Route>
 
       {/* Admin ERP Login */}

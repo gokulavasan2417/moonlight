@@ -162,7 +162,7 @@ const AdminLayout = () => {
         {/* Bottom Actions */}
         <div className="p-3 border-t border-slate-800 space-y-1">
           <Link
-            to="/"
+            to="/home"
             target="_blank"
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition-colors"
             title="Open Live Public Website"
@@ -300,7 +300,7 @@ const AdminLayout = () => {
 
             {/* Quick Public Link */}
             <Link
-              to="/"
+              to="/home"
               target="_blank"
               className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-400 px-2.5 py-1.5 rounded-md hover:bg-slate-800 transition-colors"
             >

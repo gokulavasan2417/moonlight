@@ -56,7 +56,7 @@ const PublicLayout = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
+    { name: 'Home', path: '/home' },
     { name: 'Villas & Suites', path: '/villas' },
     { name: 'About Us', path: '/about' },
     { name: 'Gallery', path: '/gallery' },
@@ -96,7 +96,7 @@ const PublicLayout = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/home" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full border border-amber-500/40 bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:border-amber-400 group-hover:bg-amber-500/20 transition-all duration-300">
               <Moon className="w-5 h-5 fill-amber-400/20 text-amber-400" />
             </div>

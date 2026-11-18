@@ -79,7 +79,7 @@ const BookingConfirmationPage = () => {
         <p className="text-xs text-slate-400 mt-2">
           We could not locate reference #{reference}. Please verify the code or contact our concierge.
         </p>
-        <Link to="/" className="text-amber-400 text-xs mt-4 inline-block hover:underline">
+        <Link to="/home" className="text-amber-400 text-xs mt-4 inline-block hover:underline">
           Return to Home
         </Link>
       </div>
@@ -252,7 +252,7 @@ const BookingConfirmationPage = () => {
 
       {/* Helpful links */}
       <div className="text-center pt-4">
-        <Link to="/" className="text-amber-400 text-xs hover:underline inline-flex items-center gap-1">
+        <Link to="/home" className="text-amber-400 text-xs hover:underline inline-flex items-center gap-1">
           Return to Home Page <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
