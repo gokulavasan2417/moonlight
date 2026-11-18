@@ -54,28 +54,28 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="py-12 space-y-16">
+    <div className="py-8 sm:py-12 space-y-10 sm:space-y-16 overflow-x-hidden">
       {/* Page Title */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span className="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-3">
+        <span className="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-2 sm:mb-3">
           Concierge & Guest Relations
         </span>
-        <h1 className="font-serif text-4xl sm:text-6xl font-bold text-slate-100 mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-slate-100 mb-3 sm:mb-4">
           Connect With Moon Light Villa
         </h1>
-        <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 font-light leading-relaxed">
+        <p className="max-w-2xl mx-auto text-xs sm:text-base text-slate-400 font-light leading-relaxed px-2">
           Our dedicated hospitality desk is available 24/7 to assist with estate bookings, corporate retreats, celebratory packages, and bespoke culinary requests.
         </p>
-        <div className="w-16 h-0.5 bg-amber-500 mx-auto mt-6" />
+        <div className="w-16 h-0.5 bg-amber-500 mx-auto mt-4 sm:mt-6" />
       </div>
 
       {/* Grid: Details on Left, Form on Right */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Contact Details */}
-          <div className="space-y-8">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 space-y-6">
-              <h2 className="font-serif text-2xl font-bold text-slate-100">Estate Address & Directions</h2>
+          <div className="space-y-6 sm:space-y-8">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 sm:p-8 space-y-5 sm:space-y-6">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-100">Estate Address & Directions</h2>
               <div className="space-y-4 text-xs text-slate-300">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
@@ -113,7 +113,7 @@ const ContactPage = () => {
             </div>
 
             {/* Quick WhatsApp Card */}
-            <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-6 flex items-center justify-between">
+            <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="font-bold text-emerald-400 text-sm">Need Instant Assistance?</h3>
                 <p className="text-xs text-slate-300 mt-0.5">Connect immediately with our duty manager on WhatsApp.</p>
@@ -122,7 +122,7 @@ const ContactPage = () => {
                 href="https://wa.me/919820012345?text=Hello%20Moon%20Light%20Villa%20Concierge"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 shrink-0"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-1.5 shrink-0 w-full sm:w-auto"
               >
                 <MessageCircle className="w-4 h-4" /> Chat Now
               </a>
@@ -130,9 +130,9 @@ const ContactPage = () => {
           </div>
 
           {/* Contact & Enquiry Form */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl">
-            <h2 className="font-serif text-2xl font-bold text-slate-100 mb-2">Send Private Stay Enquiry</h2>
-            <p className="text-xs text-slate-400 mb-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-100 mb-2">Send Private Stay Enquiry</h2>
+            <p className="text-xs text-slate-400 mb-5 sm:mb-6">
               Our reservation team responds within 60 minutes with personalized tariff sheets and availability.
             </p>
 

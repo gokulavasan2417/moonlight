@@ -181,7 +181,7 @@ const BookingPage = () => {
   const selectedVilla = villas.find((v) => v._id === selectedVillaId);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12 overflow-x-hidden">
       {/* Title */}
       <div className="text-center max-w-2xl mx-auto">
         <span className="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-2">
@@ -190,22 +190,22 @@ const BookingPage = () => {
         <h1 className="font-serif text-3xl sm:text-5xl font-bold text-slate-100">
           Reserve Moon Light Villa
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-2">
+        <p className="text-xs sm:text-sm text-slate-400 mt-2 px-2">
           Best Rate Guarantee • Instant Booking Voucher • Secure SSL Transaction
         </p>
       </div>
 
       {/* Main Reservation Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
         {/* Left 2 Columns: Dates, Accommodations & Guest Form */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           {/* Step 1: Accommodation & Dates Selection */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
-            <h2 className="text-sm uppercase tracking-widest font-bold text-amber-400 flex items-center gap-2">
-              <Calendar className="w-4 h-4" /> 1. Select Accommodation & Stay Dates
+          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 sm:p-8 space-y-5 sm:space-y-6">
+            <h2 className="text-xs sm:text-sm uppercase tracking-widest font-bold text-amber-400 flex items-center gap-2">
+              <Calendar className="w-4 h-4 shrink-0" /> 1. Select Accommodation & Stay Dates
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               {/* Villa Selector */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -293,12 +293,12 @@ const BookingPage = () => {
           </div>
 
           {/* Step 2: Guest Information Form */}
-          <form id="booking-form" onSubmit={handleSubmitBooking} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
-            <h2 className="text-sm uppercase tracking-widest font-bold text-amber-400 flex items-center gap-2">
-              <Users className="w-4 h-4" /> 2. Primary Guest Information
+          <form id="booking-form" onSubmit={handleSubmitBooking} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 sm:p-8 space-y-5 sm:space-y-6">
+            <h2 className="text-xs sm:text-sm uppercase tracking-widest font-bold text-amber-400 flex items-center gap-2">
+              <Users className="w-4 h-4 shrink-0" /> 2. Primary Guest Information
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   Full Name (As per Govt. ID) *
@@ -372,9 +372,9 @@ const BookingPage = () => {
 
         {/* Right 1 Column: Summary, Coupon & Advance Payment */}
         <div>
-          <div className="sticky top-28 space-y-6">
+          <div className="lg:sticky lg:top-28 space-y-6">
             {/* Price Breakdown Card */}
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl shadow-2xl border border-amber-500/20 space-y-6">
+            <div className="glass-panel p-5 sm:p-8 rounded-2xl shadow-2xl border border-amber-500/20 space-y-5 sm:space-y-6">
               <h3 className="font-serif text-lg font-bold text-slate-100 border-b border-slate-800 pb-3">
                 Tariff Summary
               </h3>

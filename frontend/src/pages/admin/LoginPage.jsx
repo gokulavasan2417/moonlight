@@ -46,7 +46,7 @@ const LoginPage = () => {
       </div>
 
       {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-slate-900/90 border border-amber-500/30 rounded-3xl p-8 sm:p-10 shadow-2xl backdrop-blur-xl">
+      <div className="relative z-10 w-full max-w-md bg-slate-900/90 border border-amber-500/30 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-xl">
         {/* Brand */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-full border border-amber-500/40 bg-amber-500/10 flex items-center justify-center text-amber-400 mx-auto mb-3 shadow-lg">

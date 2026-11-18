@@ -65,20 +65,20 @@ const PublicLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
       {/* Top Notification Bar */}
-      <div className="bg-slate-900 border-b border-slate-800/80 text-xs text-slate-400 py-2 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-4">
+      <div className="bg-slate-900 border-b border-slate-800/80 text-[11px] sm:text-xs text-slate-400 py-2 px-3 sm:px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center text-center sm:text-left">
             <span className="flex items-center gap-1.5 text-amber-400/90 font-medium">
-              <Sparkles className="w-3.5 h-3.5" /> Direct Booking Privilege: Guaranteed Best Rates & Flexible Check-in
+              <Sparkles className="w-3.5 h-3.5 shrink-0" /> Direct Booking Privilege: Guaranteed Best Rates & Flexible Check-in
             </span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center justify-center gap-4 sm:gap-6">
             <a href="tel:+919820012345" className="hover:text-amber-300 transition-colors flex items-center gap-1.5">
-              <Phone className="w-3 h-3 text-amber-400" /> +91 98200 12345
+              <Phone className="w-3 h-3 text-amber-400 shrink-0" /> +91 98200 12345
             </a>
-            <span className="hidden md:inline-block text-slate-700">|</span>
+            <span className="text-slate-700">|</span>
             <Link to="/erp/login" className="hover:text-amber-300 transition-colors flex items-center gap-1">
               ERP Portal
             </Link>
@@ -90,28 +90,28 @@ const PublicLayout = () => {
       <header 
         className={`sticky top-0 z-50 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-slate-950/95 backdrop-blur-md border-b border-amber-900/20 py-3 shadow-2xl' 
-            : 'bg-gradient-to-b from-slate-950/90 to-transparent py-5'
+            ? 'bg-slate-950/95 backdrop-blur-md border-b border-amber-900/20 py-2.5 sm:py-3 shadow-2xl' 
+            : 'bg-gradient-to-b from-slate-950/90 to-transparent py-3 sm:py-4 md:py-5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo */}
-          <Link to="/home" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full border border-amber-500/40 bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:border-amber-400 group-hover:bg-amber-500/20 transition-all duration-300">
-              <Moon className="w-5 h-5 fill-amber-400/20 text-amber-400" />
+          <Link to="/home" className="flex items-center gap-2.5 sm:gap-3 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-amber-500/40 bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:border-amber-400 group-hover:bg-amber-500/20 transition-all duration-300 shrink-0">
+              <Moon className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400/20 text-amber-400" />
             </div>
             <div>
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-widest text-slate-100 group-hover:text-amber-300 transition-colors block leading-tight">
+              <span className="font-serif text-lg sm:text-xl lg:text-2xl font-bold tracking-widest text-slate-100 group-hover:text-amber-300 transition-colors block leading-tight">
                 MOON LIGHT
               </span>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-amber-400 font-semibold block">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-amber-400 font-semibold block">
                 Villa & Estate
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-7 xl:gap-8">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -137,7 +137,7 @@ const PublicLayout = () => {
           <div className="hidden lg:flex items-center gap-4">
             <Link
               to="/booking"
-              className="gold-button-gradient text-slate-950 font-semibold text-xs uppercase tracking-wider px-6 py-2.5 rounded-full shadow-lg shadow-amber-900/20 hover:shadow-amber-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
+              className="gold-button-gradient text-slate-950 font-semibold text-xs uppercase tracking-wider px-5 sm:px-6 py-2.5 rounded-full shadow-lg shadow-amber-900/20 hover:shadow-amber-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
             >
               <Calendar className="w-3.5 h-3.5" /> Reserve Villa
             </Link>
@@ -155,19 +155,21 @@ const PublicLayout = () => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-slate-900/98 border-b border-amber-900/30 px-6 py-6 space-y-4 backdrop-blur-xl animate-fadeIn">
+          <div className="lg:hidden bg-slate-900/98 border-b border-amber-900/30 px-5 sm:px-6 py-5 sm:py-6 space-y-3 sm:space-y-4 backdrop-blur-xl animate-fadeIn max-h-[calc(100vh-80px)] overflow-y-auto">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className="block text-base font-medium text-slate-200 hover:text-amber-400 py-2 border-b border-slate-800"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-base font-medium text-slate-200 hover:text-amber-400 py-2 border-b border-slate-800 transition-colors"
               >
                 {link.name}
               </Link>
             ))}
             <Link
               to="/booking"
-              className="w-full text-center gold-button-gradient text-slate-950 font-semibold text-sm uppercase tracking-wider py-3 rounded-lg block mt-4 shadow-lg shadow-amber-900/40"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center gold-button-gradient text-slate-950 font-semibold text-xs sm:text-sm uppercase tracking-wider py-3 rounded-lg block mt-4 shadow-lg shadow-amber-900/40"
             >
               Reserve Villa Online
             </Link>
@@ -278,9 +280,9 @@ const PublicLayout = () => {
           </div>
 
           {/* Bottom Copyright & Legal */}
-          <div className="border-t border-slate-850 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+          <div className="border-t border-slate-800/80 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 sm:gap-4 text-center sm:text-left">
             <p>© {new Date().getFullYear()} MOON LIGHT VILLA & ESTATE. All rights reserved.</p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <Link to="/terms" className="hover:text-slate-400 transition-colors">Terms of Stay</Link>
               <Link to="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
               <Link to="/erp/login" className="hover:text-amber-400 transition-colors">Admin ERP Login</Link>
@@ -294,10 +296,10 @@ const PublicLayout = () => {
         href="https://wa.me/919820012345?text=Hello%20Moon%20Light%20Villa%20Concierge,%20I%20would%20like%20to%20inquire%20about%20villa%20availability."
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 group"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white p-3 sm:p-3.5 rounded-full shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 group"
         aria-label="Chat on WhatsApp"
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-semibold px-0 group-hover:px-2">
           Concierge WhatsApp
         </span>
