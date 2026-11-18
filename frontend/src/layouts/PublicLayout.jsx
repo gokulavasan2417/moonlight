@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useOutlet } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from '../components/common/PageTransition';
 import { 
   Phone, 
   Mail, 
@@ -24,6 +26,7 @@ const PublicLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [websiteSettings, setWebsiteSettings] = useState(null);
   const location = useLocation();
+  const currentOutlet = useOutlet();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,10 +50,9 @@ const PublicLayout = () => {
     fetchSettings();
   }, []);
 
-  // Close mobile menu on page change
+  // Close mobile menu on page change (scroll to top is handled during curtain wipe via onExitComplete)
   useEffect(() => {
     setMobileMenuOpen(false);
-    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   const navLinks = [
@@ -174,8 +176,12 @@ const PublicLayout = () => {
       </header>
 
       {/* Main Page Content */}
-      <main className="flex-1">
-        <Outlet />
+      <main className="flex-1 relative">
+        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+          <PageTransition key={location.pathname}>
+            {currentOutlet}
+          </PageTransition>
+        </AnimatePresence>
       </main>
 
       {/* Luxury Hospitality Footer */}
