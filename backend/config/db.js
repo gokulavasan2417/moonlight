@@ -1,7 +1,17 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongod = null;
+
+// Fix for Windows / local Node.js DNS SRV resolution issues with MongoDB Atlas (querySrv ECONNREFUSED)
+if (process.platform === 'win32' || !process.env.VERCEL) {
+  try {
+    dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+  } catch (dnsErr) {
+    // Ignore in environments where setServers is restricted
+  }
+}
 
 export const connectDB = async () => {
   // Reuse existing connection in serverless warm invocations
@@ -19,11 +29,22 @@ export const connectDB = async () => {
       console.log(` MongoDB Connected (Custom URI): ${conn.connection.host}`);
       return conn;
     } catch (err) {
-      console.warn(` Failed connecting to provided MONGODB_URI: ${err.message}`);
-      if (process.env.VERCEL) {
-        throw new Error(`Failed connecting to MONGODB_URI on Vercel: ${err.message}`);
+      console.warn(` First connection attempt to provided MONGODB_URI failed: ${err.message}`);
+      // Retry with explicit DNS servers in case of Windows querySrv failure
+      try {
+        dns.setServers(['8.8.8.8', '1.1.1.1']);
+        const conn = await mongoose.connect(customUri, {
+          serverSelectionTimeoutMS: 8000,
+        });
+        console.log(` MongoDB Connected (Custom URI after DNS switch): ${conn.connection.host}`);
+        return conn;
+      } catch (retryErr) {
+        console.warn(` Retry failed connecting to MONGODB_URI: ${retryErr.message}`);
+        if (process.env.VERCEL) {
+          throw new Error(`Failed connecting to MONGODB_URI on Vercel: ${retryErr.message}`);
+        }
+        console.log(' Falling back to embedded MongoMemoryServer for reliable execution...');
       }
-      console.log(' Falling back to embedded MongoMemoryServer for reliable execution...');
     }
   }
 

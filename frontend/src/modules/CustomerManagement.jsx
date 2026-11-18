@@ -174,7 +174,14 @@ const CustomerManagement = () => {
 
       {/* Customers Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-        <table className="w-full text-left text-slate-300">
+        <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+            👉 Swipe left/right to view customer metrics
+          </span>
+          <span className="text-[10px] text-slate-500">{customers.length} Guests</span>
+        </div>
+        <div className="overflow-x-auto w-full max-w-full">
+          <table className="w-full min-w-[780px] text-left text-slate-300">
           <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
             <tr>
               <th className="py-3 px-4">Guest Name</th>
@@ -231,6 +238,7 @@ const CustomerManagement = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Customer Profile Drawer Modal */}
@@ -275,28 +283,30 @@ const CustomerManagement = () => {
             <div>
               <h4 className="font-bold text-slate-200 mb-2">Reservation History</h4>
               <div className="bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
-                <table className="w-full text-left text-[11px]">
-                  <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
-                    <tr>
-                      <th className="p-2.5">Ref</th>
-                      <th className="p-2.5">Villa</th>
-                      <th className="p-2.5">Check-In</th>
-                      <th className="p-2.5">Total Amount</th>
-                      <th className="p-2.5">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800">
-                    {customerDetail.reservations?.map((r) => (
-                      <tr key={r._id}>
-                        <td className="p-2.5 font-mono text-amber-400">{r.bookingReference}</td>
-                        <td className="p-2.5">{r.villa?.name}</td>
-                        <td className="p-2.5">{new Date(r.checkIn).toLocaleDateString()}</td>
-                        <td className="p-2.5 font-bold">₹{r.pricing?.totalAmount?.toLocaleString('en-IN')}</td>
-                        <td className="p-2.5 text-emerald-400">{r.status}</td>
+                <div className="overflow-x-auto w-full max-w-full">
+                  <table className="w-full min-w-[500px] text-left text-[11px]">
+                    <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
+                      <tr>
+                        <th className="p-2.5">Ref</th>
+                        <th className="p-2.5">Villa</th>
+                        <th className="p-2.5">Check-In</th>
+                        <th className="p-2.5">Total Amount</th>
+                        <th className="p-2.5">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {customerDetail.reservations?.map((r) => (
+                        <tr key={r._id}>
+                          <td className="p-2.5 font-mono text-amber-400">{r.bookingReference}</td>
+                          <td className="p-2.5">{r.villa?.name}</td>
+                          <td className="p-2.5">{new Date(r.checkIn).toLocaleDateString()}</td>
+                          <td className="p-2.5 font-bold">₹{r.pricing?.totalAmount?.toLocaleString('en-IN')}</td>
+                          <td className="p-2.5 text-emerald-400">{r.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

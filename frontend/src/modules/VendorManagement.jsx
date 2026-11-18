@@ -145,10 +145,10 @@ const VendorManagement = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold">
+      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold overflow-x-auto pb-1 max-w-full">
         <button
           onClick={() => setActiveTab('vendors')}
-          className={`px-4 py-2.5 border-b-2 transition-all ${
+          className={`px-4 py-2.5 border-b-2 transition-all shrink-0 ${
             activeTab === 'vendors' ? 'border-amber-400 text-amber-400 bg-slate-900/50' : 'border-transparent text-slate-400'
           }`}
         >
@@ -156,7 +156,7 @@ const VendorManagement = () => {
         </button>
         <button
           onClick={() => setActiveTab('bills')}
-          className={`px-4 py-2.5 border-b-2 transition-all ${
+          className={`px-4 py-2.5 border-b-2 transition-all shrink-0 ${
             activeTab === 'bills' ? 'border-amber-400 text-amber-400 bg-slate-900/50' : 'border-transparent text-slate-400'
           }`}
         >
@@ -201,34 +201,42 @@ const VendorManagement = () => {
 
       {activeTab === 'bills' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-          <table className="w-full text-left text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="py-3 px-4">Bill No</th>
-                <th className="py-3 px-4">Vendor</th>
-                <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Total Amount</th>
-                <th className="py-3 px-4">Balance Due</th>
-                <th className="py-3 px-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {bills.map((b) => (
-                <tr key={b._id} className="hover:bg-slate-800/40">
-                  <td className="py-3 px-4 font-mono font-bold text-amber-400">{b.billNumber}</td>
-                  <td className="py-3 px-4 font-medium text-slate-100">{b.vendor?.companyName}</td>
-                  <td className="py-3 px-4 text-slate-400">{b.description}</td>
-                  <td className="py-3 px-4 font-bold text-slate-100">₹{b.totalAmount.toLocaleString('en-IN')}</td>
-                  <td className="py-3 px-4 font-bold text-amber-400">₹{b.balanceDue.toLocaleString('en-IN')}</td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold text-[10px] uppercase">
-                      {b.status}
-                    </span>
-                  </td>
+          <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+              👉 Swipe left/right to view all bill details
+            </span>
+            <span className="text-[10px] text-slate-500">{bills.length} Bills</span>
+          </div>
+          <div className="overflow-x-auto w-full max-w-full">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
+              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
+                <tr>
+                  <th className="py-3 px-4">Bill No</th>
+                  <th className="py-3 px-4">Vendor</th>
+                  <th className="py-3 px-4">Description</th>
+                  <th className="py-3 px-4">Total Amount</th>
+                  <th className="py-3 px-4">Balance Due</th>
+                  <th className="py-3 px-4">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {bills.map((b) => (
+                  <tr key={b._id} className="hover:bg-slate-800/40">
+                    <td className="py-3 px-4 font-mono font-bold text-amber-400 whitespace-nowrap">{b.billNumber}</td>
+                    <td className="py-3 px-4 font-medium text-slate-100 whitespace-nowrap">{b.vendor?.companyName}</td>
+                    <td className="py-3 px-4 text-slate-400">{b.description}</td>
+                    <td className="py-3 px-4 font-bold text-slate-100 whitespace-nowrap">₹{b.totalAmount.toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 font-bold text-amber-400 whitespace-nowrap">₹{b.balanceDue.toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold text-[10px] uppercase">
+                        {b.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

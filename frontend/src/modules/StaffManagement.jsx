@@ -155,10 +155,10 @@ const StaffManagement = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold">
+      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold overflow-x-auto pb-1 max-w-full">
         <button
           onClick={() => setActiveTab('users')}
-          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'users' ? 'border-amber-400 text-amber-400 bg-slate-900/50' : 'border-transparent text-slate-400'
           }`}
         >
@@ -166,7 +166,7 @@ const StaffManagement = () => {
         </button>
         <button
           onClick={() => setActiveTab('audit')}
-          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+          className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'audit' ? 'border-amber-400 text-amber-400 bg-slate-900/50' : 'border-transparent text-slate-400'
           }`}
         >
@@ -177,7 +177,14 @@ const StaffManagement = () => {
       {/* Tab 1: Staff Users Table */}
       {activeTab === 'users' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-          <table className="w-full text-left text-slate-300">
+          <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+              👉 Swipe left/right to view all staff details
+            </span>
+            <span className="text-[10px] text-slate-500">{users.length} Staff</span>
+          </div>
+          <div className="overflow-x-auto w-full max-w-full">
+            <table className="w-full min-w-[780px] text-left text-slate-300">
             <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="py-3 px-4">Staff Name</th>
@@ -249,6 +256,7 @@ const StaffManagement = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -259,8 +267,15 @@ const StaffManagement = () => {
             <h3 className="font-semibold text-slate-200">System Activity Audit Log</h3>
             <p className="text-slate-400 text-[11px]">Comprehensive immutable record of reservations, logins, financial payouts, and user alterations.</p>
           </div>
+          <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+              👉 Swipe left/right to view all audit columns
+            </span>
+            <span className="text-[10px] text-slate-500">{auditLogs.length} Events</span>
+          </div>
 
-          <table className="w-full text-left text-slate-300">
+          <div className="overflow-x-auto w-full max-w-full">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
             <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>
@@ -292,6 +307,7 @@ const StaffManagement = () => {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

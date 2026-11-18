@@ -196,7 +196,7 @@ const BillingManagement = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold">
+      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold overflow-x-auto pb-1 max-w-full">
         {[
           { id: 'invoices', label: 'Tax Invoices', count: invoices.length },
           { id: 'payments', label: 'Payment Transactions', count: payments.length },
@@ -205,9 +205,9 @@ const BillingManagement = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+            className={`px-4 py-2.5 border-b-2 transition-all flex items-center gap-2 shrink-0 ${
               activeTab === tab.id
-                ? 'border-amber-400 text-amber-400 bg-slate-900/50'
+                ? 'border-amber-400 text-amber-400 bg-slate-900/50 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -236,7 +236,7 @@ const BillingManagement = () => {
               </button>
             </div>
           )}
-          <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+          <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 text-xs">
             <div className="relative w-full sm:w-72">
               <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
               <input
@@ -248,15 +248,15 @@ const BillingManagement = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 max-w-full">
               {['All', 'Paid', 'Partially Paid', 'Issued', 'Overdue'].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap shrink-0 transition-colors ${
                     statusFilter === st
                       ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                      : 'bg-slate-950 text-slate-400 border border-slate-800'
+                      : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200'
                   }`}
                 >
                   {st}
@@ -266,85 +266,93 @@ const BillingManagement = () => {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-            <table className="w-full text-left text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Invoice #</th>
-                  <th className="py-3 px-4">Guest / Bill To</th>
-                  <th className="py-3 px-4">Issue Date</th>
-                  <th className="py-3 px-4">Taxable Amt</th>
-                  <th className="py-3 px-4">GST (18%)</th>
-                  <th className="py-3 px-4">Grand Total</th>
-                  <th className="py-3 px-4">Balance Due</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">PDF Download</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {invoices.length === 0 ? (
+            <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                👉 Swipe left/right to view all invoice columns
+              </span>
+              <span className="text-[10px] text-slate-500">{invoices.length} Invoices</span>
+            </div>
+            <div className="overflow-x-auto w-full max-w-full">
+              <table className="w-full min-w-[850px] text-left text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
                   <tr>
-                    <td colSpan="9" className="py-8 text-center text-slate-500">
-                      No invoices recorded.
-                    </td>
+                    <th className="py-3 px-4">Invoice #</th>
+                    <th className="py-3 px-4">Guest / Bill To</th>
+                    <th className="py-3 px-4">Issue Date</th>
+                    <th className="py-3 px-4">Taxable Amt</th>
+                    <th className="py-3 px-4">GST (18%)</th>
+                    <th className="py-3 px-4">Grand Total</th>
+                    <th className="py-3 px-4">Balance Due</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4 text-right">PDF Download</th>
                   </tr>
-                ) : (
-                  invoices.map((inv) => (
-                    <tr key={inv._id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-amber-400">{inv.invoiceNumber}</td>
-                      <td className="py-3 px-4">
-                        <strong className="text-slate-100 block">{inv.customerDetails?.fullName}</strong>
-                        <span className="text-slate-500 text-[10px]">{inv.customerDetails?.phone}</span>
-                      </td>
-                      <td className="py-3 px-4 text-slate-400">
-                        {new Date(inv.issueDate).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4 font-medium">₹{inv.subTotal?.toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-4 text-slate-400">₹{inv.gstDetails?.totalGst?.toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-4 font-bold text-slate-100">
-                        ₹{inv.grandTotal?.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-3 px-4 font-bold text-amber-400">
-                        ₹{inv.balanceDue?.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                            inv.status === 'Paid'
-                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                              : inv.status === 'Partially Paid'
-                              ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                              : 'bg-red-500/10 text-red-400 border border-red-500/30'
-                          }`}
-                        >
-                          {inv.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleDownloadPdf(inv)}
-                          disabled={downloadingId === inv._id}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-wait text-amber-400 hover:text-amber-300 rounded border border-slate-700 text-[11px] font-medium transition-colors cursor-pointer"
-                          title="Download Generated PDF Invoice"
-                        >
-                          {downloadingId === inv._id ? (
-                            <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
-                              <span>Downloading...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Download className="w-3.5 h-3.5" />
-                              <span>PDF</span>
-                            </>
-                          )}
-                        </button>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {invoices.length === 0 ? (
+                    <tr>
+                      <td colSpan="9" className="py-8 text-center text-slate-500">
+                        No invoices recorded.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    invoices.map((inv) => (
+                      <tr key={inv._id} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3 px-4 font-mono font-bold text-amber-400 whitespace-nowrap">{inv.invoiceNumber}</td>
+                        <td className="py-3 px-4">
+                          <strong className="text-slate-100 block whitespace-nowrap">{inv.customerDetails?.fullName}</strong>
+                          <span className="text-slate-500 text-[10px]">{inv.customerDetails?.phone}</span>
+                        </td>
+                        <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                          {new Date(inv.issueDate).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4 font-medium whitespace-nowrap">₹{inv.subTotal?.toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-4 text-slate-400 whitespace-nowrap">₹{inv.gstDetails?.totalGst?.toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-4 font-bold text-slate-100 whitespace-nowrap">
+                          ₹{inv.grandTotal?.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3 px-4 font-bold text-amber-400 whitespace-nowrap">
+                          ₹{inv.balanceDue?.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                              inv.status === 'Paid'
+                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                                : inv.status === 'Partially Paid'
+                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                                : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                            }`}
+                          >
+                            {inv.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right whitespace-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadPdf(inv)}
+                            disabled={downloadingId === inv._id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-wait text-amber-400 hover:text-amber-300 rounded border border-slate-700 text-[11px] font-medium transition-colors cursor-pointer"
+                            title="Download Generated PDF Invoice"
+                          >
+                            {downloadingId === inv._id ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                                <span>Downloading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Download className="w-3.5 h-3.5" />
+                                <span>PDF</span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -352,34 +360,42 @@ const BillingManagement = () => {
       {/* Payments View */}
       {activeTab === 'payments' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-          <table className="w-full text-left text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="py-3 px-4">Payment Ref</th>
-                <th className="py-3 px-4">Amount</th>
-                <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Method</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {payments.map((p) => (
-                <tr key={p._id} className="hover:bg-slate-800/40">
-                  <td className="py-3 px-4 font-mono font-bold text-amber-400">{p.paymentReference}</td>
-                  <td className="py-3 px-4 font-bold text-emerald-400">₹{p.amount.toLocaleString('en-IN')}</td>
-                  <td className="py-3 px-4">{p.paymentType}</td>
-                  <td className="py-3 px-4 text-slate-400">{p.paymentMethod}</td>
-                  <td className="py-3 px-4 text-slate-400">{new Date(p.paymentDate).toLocaleDateString()}</td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[10px]">
-                      {p.status}
-                    </span>
-                  </td>
+          <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+              👉 Swipe left/right to view transactions
+            </span>
+            <span className="text-[10px] text-slate-500">{payments.length} Payments</span>
+          </div>
+          <div className="overflow-x-auto w-full max-w-full">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
+              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
+                <tr>
+                  <th className="py-3 px-4">Payment Ref</th>
+                  <th className="py-3 px-4">Amount</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Method</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {payments.map((p) => (
+                  <tr key={p._id} className="hover:bg-slate-800/40">
+                    <td className="py-3 px-4 font-mono font-bold text-amber-400 whitespace-nowrap">{p.paymentReference}</td>
+                    <td className="py-3 px-4 font-bold text-emerald-400 whitespace-nowrap">₹{p.amount.toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">{p.paymentType}</td>
+                    <td className="py-3 px-4 text-slate-400 whitespace-nowrap">{p.paymentMethod}</td>
+                    <td className="py-3 px-4 text-slate-400 whitespace-nowrap">{new Date(p.paymentDate).toLocaleDateString()}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[10px]">
+                        {p.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

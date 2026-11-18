@@ -181,7 +181,7 @@ const CRMManagement = () => {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+      <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 text-xs">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
           <input
@@ -193,12 +193,12 @@ const CRMManagement = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full w-full sm:w-auto">
           {['All', 'New', 'Contacted', 'Follow-up', 'Interested', 'Quotation Sent', 'Converted', 'Lost'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap shrink-0 ${
                 statusFilter === st
                   ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
                   : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200'
@@ -212,7 +212,14 @@ const CRMManagement = () => {
 
       {/* Leads Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl text-xs">
-        <table className="w-full text-left text-slate-300">
+        <div className="sm:hidden px-4 py-2 text-[11px] text-slate-400 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+            👉 Swipe left/right to view all lead details
+          </span>
+          <span className="text-[10px] text-slate-500">{leads.length} Leads</span>
+        </div>
+        <div className="overflow-x-auto w-full max-w-full">
+          <table className="w-full min-w-[800px] text-left text-slate-300">
           <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
             <tr>
               <th className="py-3 px-4">Lead Name</th>
@@ -298,6 +305,7 @@ const CRMManagement = () => {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Follow-up Modal */}

@@ -181,7 +181,7 @@ const ReportsManagement = () => {
 
         <div className="overflow-x-auto max-h-[500px]">
           {selectedModule === 'reservations' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[750px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Ref</th>
@@ -212,7 +212,7 @@ const ReportsManagement = () => {
           )}
 
           {selectedModule === 'invoices' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[750px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Invoice #</th>
@@ -241,7 +241,7 @@ const ReportsManagement = () => {
           )}
 
           {selectedModule === 'expenses' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Voucher</th>
@@ -270,7 +270,7 @@ const ReportsManagement = () => {
           )}
 
           {selectedModule === 'leads' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Lead Name</th>
@@ -297,7 +297,7 @@ const ReportsManagement = () => {
           )}
 
           {selectedModule === 'customers' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Guest Name</th>
@@ -324,7 +324,7 @@ const ReportsManagement = () => {
           )}
 
           {selectedModule === 'payouts' && (
-            <table className="w-full text-left text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-slate-300">
               <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
                 <tr>
                   <th className="py-3 px-4">Ref #</th>

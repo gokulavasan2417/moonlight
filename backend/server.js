@@ -6,6 +6,14 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Explicitly resolve .env path from backend directory as well as current working directory
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
 import { connectDB } from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
@@ -25,8 +33,6 @@ import websiteRoutes from './routes/websiteRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import { getDashboardStats } from './controllers/reportController.js';
 import { protect } from './middleware/auth.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -92,9 +98,6 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // Static uploads directory
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const uploadsPath = path.resolve(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
