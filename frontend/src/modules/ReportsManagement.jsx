@@ -9,9 +9,11 @@ import {
   DollarSign,
   Users,
   CheckCircle,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 import api from '../services/api';
+import { downloadExcelReport } from '../utils/exportToExcel';
 
 const ReportsManagement = () => {
   const [selectedModule, setSelectedModule] = useState('reservations');
@@ -19,6 +21,7 @@ const ReportsManagement = () => {
   const [reportData, setReportData] = useState([]);
   const [summaryStats, setSummaryStats] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const modulesList = [
     { id: 'reservations', name: 'Reservations & Stays', endpoint: '/reservations' },
@@ -53,6 +56,17 @@ const ReportsManagement = () => {
     fetchReport();
   }, [selectedModule, dateRange]);
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport(selectedModule);
+    } catch (err) {
+      alert(err.message || 'Failed to export report');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -66,19 +80,31 @@ const ReportsManagement = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={() => window.print()}
             className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5"
           >
             <Printer className="w-3.5 h-3.5" /> Print Report
           </button>
-          <a
-            href={`/api/reports/export-excel?module=${selectedModule}`}
-            className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5"
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
           >
-            <Download className="w-3.5 h-3.5" /> Export Selected (Excel .xlsx)
-          </a>
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 fill-slate-950 animate-spin" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Selected (Excel .xlsx)</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 

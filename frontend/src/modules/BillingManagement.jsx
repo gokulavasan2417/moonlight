@@ -14,6 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import api from '../services/api';
+import { downloadExcelReport } from '../utils/exportToExcel';
 
 const BillingManagement = () => {
   const [activeTab, setActiveTab] = useState('invoices');
@@ -25,6 +26,7 @@ const BillingManagement = () => {
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState(null);
   const [downloadError, setDownloadError] = useState('');
+  const [exporting, setExporting] = useState(false);
 
   // Manual Invoice Modal
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -141,6 +143,17 @@ const BillingManagement = () => {
     }
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport('invoices');
+    } catch (err) {
+      alert(err.message || 'Failed to export invoices');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -154,13 +167,25 @@ const BillingManagement = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
-          <a
-            href="/api/reports/export-excel?module=invoices"
-            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5"
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
           >
-            <Download className="w-3.5 h-3.5 text-amber-400" /> Export GST Report
-          </a>
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <span>Export GST Report</span>
+              </>
+            )}
+          </button>
           <button
             onClick={() => setShowInvoiceModal(true)}
             className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5"

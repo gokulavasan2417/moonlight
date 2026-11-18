@@ -27,14 +27,27 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import { MapPin, Building } from 'lucide-react';
+import { MapPin, Building, Loader2 } from 'lucide-react';
 import api from '../../services/api';
+import { downloadExcelReport } from '../../utils/exportToExcel';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport('reservations');
+    } catch (err) {
+      alert(err.message || 'Failed to export Excel report');
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const fetchDashboardStats = async (locId = selectedLocation) => {
     try {
@@ -108,12 +121,24 @@ const DashboardPage = () => {
             </select>
           </div>
 
-          <a
-            href="/api/reports/export-excel?module=reservations"
-            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto cursor-pointer disabled:opacity-60"
           >
-            <Download className="w-3.5 h-3.5 text-amber-400 shrink-0" /> Export All Bookings (Excel)
-          </a>
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Export All Bookings (Excel)</span>
+              </>
+            )}
+          </button>
           <Link
             to="/erp/reservations"
             className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md w-full sm:w-auto text-center"

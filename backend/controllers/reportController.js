@@ -4,6 +4,7 @@ import { Customer } from '../models/Customer.js';
 import { Invoice, Payment, Refund } from '../models/Billing.js';
 import { Expense, Payout, Vendor } from '../models/Finance.js';
 import { Villa, Room } from '../models/Villa.js';
+import { User } from '../models/User.js';
 import { generateExcelBuffer } from '../services/excelService.js';
 
 // @desc Get real dynamic dashboard statistics
@@ -195,6 +196,92 @@ export const exportReportExcel = async (req, res, next) => {
         'Total Spent (INR)': c.totalSpent,
         'Repeat Guest': c.isRepeatGuest ? 'Yes' : 'No',
         'VIP': c.vipStatus ? 'Yes' : 'No'
+      }));
+    } else if (module === 'rooms' || module === 'inventory') {
+      sheetName = 'Rooms_Inventory';
+      const items = await Room.find().populate('propertyLocation', 'name').populate('villa', 'name').populate('category', 'name');
+      data = items.map(r => ({
+        'Room Number': r.roomNumber,
+        'Room Name': r.name,
+        'Location': r.propertyLocation?.name || 'N/A',
+        'Villa': r.villa?.name || 'N/A',
+        'Category': r.category?.name || 'N/A',
+        'Wing': r.wing || 'N/A',
+        'Floor': r.floor || 'N/A',
+        'Weekday Tariff (INR)': r.basePrice,
+        'Weekend Tariff (INR)': r.weekendPrice,
+        'Max Guests': r.maxGuests,
+        'Status': r.status
+      }));
+    } else if (module === 'villas') {
+      sheetName = 'Villas';
+      const items = await Villa.find().populate('propertyLocation', 'name');
+      data = items.map(v => ({
+        'Villa Name': v.name,
+        'Location': v.propertyLocation?.name || 'N/A',
+        'Bedrooms': v.specs?.bedrooms,
+        'Bathrooms': v.specs?.bathrooms,
+        'Max Guests': v.specs?.maxGuests,
+        'Area (SqFt)': v.specs?.squareFeet,
+        'Weekday Rate (INR)': v.pricing?.basePricePerNight,
+        'Weekend Rate (INR)': v.pricing?.weekendPricePerNight,
+        'Cleaning Fee (INR)': v.pricing?.cleaningFee,
+        'Security Deposit (INR)': v.pricing?.securityDeposit
+      }));
+    } else if (module === 'vendors') {
+      sheetName = 'Vendors';
+      const items = await Vendor.find();
+      data = items.map(v => ({
+        'Vendor Code': v.vendorCode,
+        'Company Name': v.name,
+        'Category': v.category,
+        'Contact Person': v.contactPerson,
+        'Phone': v.phone,
+        'Email': v.email,
+        'City': v.address?.city,
+        'GSTIN': v.gstin || 'N/A',
+        'Total Orders': v.totalOrders,
+        'Total Paid (INR)': v.totalPaid,
+        'Balance Owed (INR)': v.balanceOwed,
+        'Status': v.status
+      }));
+    } else if (module === 'payouts') {
+      sheetName = 'Payouts';
+      const items = await Payout.find().populate('vendor', 'name');
+      data = items.map(p => ({
+        'Payout ID': p.payoutNumber,
+        'Vendor': p.vendor?.name || p.vendorName || 'N/A',
+        'Amount (INR)': p.amount,
+        'Payment Mode': p.paymentMode,
+        'Transaction Ref': p.transactionReference || 'N/A',
+        'Date': new Date(p.payoutDate || p.createdAt).toLocaleDateString(),
+        'Status': p.status,
+        'Notes': p.notes || ''
+      }));
+    } else if (module === 'staff' || module === 'users') {
+      sheetName = 'Staff_Roster';
+      const items = await User.find().select('-password');
+      data = items.map(u => ({
+        'Staff ID': u.staffId || 'N/A',
+        'Full Name': u.name,
+        'Email': u.email,
+        'Role': u.role,
+        'Department': u.department || 'Operations',
+        'Phone': u.phone || 'N/A',
+        'Status': u.isActive ? 'Active' : 'Inactive',
+        'Joined Date': new Date(u.createdAt).toLocaleDateString()
+      }));
+    } else if (module === 'payments') {
+      sheetName = 'Payments';
+      const items = await Payment.find();
+      data = items.map(p => ({
+        'Receipt Number': p.paymentNumber || p._id,
+        'Amount (INR)': p.amount,
+        'Payment Method': p.paymentMethod,
+        'Transaction ID': p.transactionId || 'N/A',
+        'Date': new Date(p.paymentDate || p.createdAt).toLocaleDateString(),
+        'Status': p.status,
+        'Collected By': p.collectedBy || 'Admin'
       }));
     }
 

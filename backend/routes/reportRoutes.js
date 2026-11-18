@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.use(protect);
 router.get('/dashboard-stats', authorize('Super Admin', 'Administrator', 'Manager', 'Accountant', 'Receptionist', 'Sales Executive'), getDashboardStats);
-router.get('/export-excel', authorize('Super Admin', 'Administrator', 'Manager', 'Accountant'), exportReportExcel);
+router.get('/export-excel', authorize('Super Admin', 'Administrator', 'Manager', 'Accountant', 'Receptionist', 'Sales Executive'), exportReportExcel);
 
 export default router;

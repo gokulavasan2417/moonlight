@@ -27,9 +27,12 @@ import {
   KeyRound,
   Key,
   Copy,
-  Lock
+  Lock,
+  Download,
+  Loader2
 } from 'lucide-react';
 import api from '../services/api';
+import { downloadExcelReport } from '../utils/exportToExcel';
 
 const VillaRoomManagement = () => {
   const [activeSubTab, setActiveSubTab] = useState('grid'); // Default to the 120-room visual rack matrix!
@@ -41,6 +44,7 @@ const VillaRoomManagement = () => {
   const [staffUsers, setStaffUsers] = useState([]);
   const [roomStats, setRoomStats] = useState({ total: 120, available: 88, occupied: 16, cleaning: 8, maintenance: 4, reserved: 4 });
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   // Filters for 120-room visual rack & table
   const [selectedLocation, setSelectedLocation] = useState('all');
@@ -509,8 +513,19 @@ const VillaRoomManagement = () => {
     }
   };
 
+  const handleExportRoomsExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport('rooms');
+    } catch (err) {
+      alert(err.message || 'Failed to export 120-room inventory');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
-    <div className="space-y-6 min-w-0 max-w-full">
+    <div className="space-y-6 min-w-0 max-w-full overflow-x-hidden">
       {/* Header with Title and Primary Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800/80 min-w-0">
         <div className="min-w-0">
@@ -522,7 +537,7 @@ const VillaRoomManagement = () => {
               {locations.length} Locations • {rooms.length} Total Rooms
             </span>
           </div>
-          <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-100 flex flex-wrap items-center gap-2 break-words">
+          <h1 className="font-serif text-lg sm:text-2xl lg:text-3xl font-bold text-slate-100 flex flex-wrap items-center gap-2 break-words leading-tight">
             Multi-Location Properties & 120-Room Inventory
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -542,6 +557,24 @@ const VillaRoomManagement = () => {
             className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0"
           >
             <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" /> Add Property
+          </button>
+          <button
+            type="button"
+            onClick={handleExportRoomsExcel}
+            disabled={exporting}
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0 cursor-pointer disabled:opacity-60"
+          >
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin shrink-0" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Export Inventory (Excel)</span>
+              </>
+            )}
           </button>
           <button
             onClick={() => setShowBulkRoomModal(true)}

@@ -11,9 +11,11 @@ import {
   History,
   CreditCard,
   Eye,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
 import api from '../services/api';
+import { downloadExcelReport } from '../utils/exportToExcel';
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
@@ -21,6 +23,7 @@ const CustomerManagement = () => {
   const [filterVip, setFilterVip] = useState(false);
   const [filterRepeat, setFilterRepeat] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   // Detail Modal
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -82,6 +85,17 @@ const CustomerManagement = () => {
     }
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport('customers');
+    } catch (err) {
+      alert(err.message || 'Failed to export customers');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -95,13 +109,25 @@ const CustomerManagement = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
-          <a
-            href="/api/reports/export-excel?module=customers"
-            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5"
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
           >
-            <Download className="w-3.5 h-3.5 text-amber-400" /> Export Customers
-          </a>
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <span>Export Customers</span>
+              </>
+            )}
+          </button>
           <button
             onClick={() => setShowAddModal(true)}
             className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5"

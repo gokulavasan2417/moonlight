@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Plus, CheckCircle, Clock, XCircle, DollarSign, Download } from 'lucide-react';
+import { Send, Plus, CheckCircle, Clock, XCircle, DollarSign, Download, Loader2 } from 'lucide-react';
 import api from '../services/api';
+import { downloadExcelReport } from '../utils/exportToExcel';
 
 const PayoutManagement = () => {
   const [payouts, setPayouts] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
 
   const [payoutForm, setPayoutForm] = useState({
@@ -59,6 +61,17 @@ const PayoutManagement = () => {
     }
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      await downloadExcelReport('payouts');
+    } catch (err) {
+      alert(err.message || 'Failed to export payouts');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -72,12 +85,32 @@ const PayoutManagement = () => {
           </h1>
         </div>
 
-        <button
-          onClick={() => setShowPayoutModal(true)}
-          className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5"
-        >
-          <Plus className="w-3.5 h-3.5" /> Create Payout Request
-        </button>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+          >
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <span>Export Payouts (Excel)</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => setShowPayoutModal(true)}
+            className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5"
+          >
+            <Plus className="w-3.5 h-3.5" /> Create Payout Request
+          </button>
+        </div>
       </div>
 
       {/* Payouts Table */}
