@@ -78,9 +78,9 @@ const DashboardPage = () => {
   const COLORS = ['#f59e0b', '#3b82f6', '#10b981', '#a855f7'];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 min-w-0 max-w-full">
       {/* Header with Title & Quick Export */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
         <div>
           <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold block">
             Executive Overview
@@ -90,14 +90,14 @@ const DashboardPage = () => {
           </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 min-w-0">
           {/* Location Filter */}
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
-            <MapPin className="w-3.5 h-3.5 text-amber-400" />
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs max-w-full">
+            <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer max-w-[200px] sm:max-w-none truncate"
             >
               <option value="all" className="bg-slate-900">All Locations (120 Rooms)</option>
               {locations.map((loc) => (
@@ -110,13 +110,13 @@ const DashboardPage = () => {
 
           <a
             href="/api/reports/export-excel?module=reservations"
-            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3.5 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
           >
-            <Download className="w-3.5 h-3.5 text-amber-400" /> Export All Bookings (Excel)
+            <Download className="w-3.5 h-3.5 text-amber-400 shrink-0" /> Export All Bookings (Excel)
           </a>
           <Link
             to="/erp/reservations"
-            className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md"
+            className="gold-button-gradient text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg shadow-md w-full sm:w-auto text-center"
           >
             + New Reservation
           </Link>
@@ -124,7 +124,7 @@ const DashboardPage = () => {
       </div>
 
       {/* Row 1: Primary Financial KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 min-w-0">
         {/* Total Revenue */}
         <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl">
           <div className="flex items-center justify-between">

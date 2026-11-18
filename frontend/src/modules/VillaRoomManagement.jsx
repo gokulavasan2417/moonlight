@@ -510,19 +510,19 @@ const VillaRoomManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0 max-w-full">
       {/* Header with Title and Primary Actions */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800/80">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] uppercase tracking-widest text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800/80 min-w-0">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className="text-[10px] sm:text-[11px] uppercase tracking-widest text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
               Module 3: Multi-Location & 120-Room Engine
             </span>
             <span className="text-xs text-slate-400">
               {locations.length} Locations • {rooms.length} Total Rooms
             </span>
           </div>
-          <h1 className="font-serif text-2xl lg:text-3xl font-bold text-slate-100 flex items-center gap-2">
+          <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-100 flex flex-wrap items-center gap-2 break-words">
             Multi-Location Properties & 120-Room Inventory
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -530,93 +530,93 @@ const VillaRoomManagement = () => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 min-w-0">
           <button
             onClick={() => openNewVillaModal()}
-            className="gold-button-gradient text-slate-950 font-bold text-xs px-3.5 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md"
+            className="gold-button-gradient text-slate-950 font-bold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md shrink-0"
           >
-            <Home className="w-3.5 h-3.5 fill-slate-950" /> + New Villa / Access
+            <Home className="w-3.5 h-3.5 fill-slate-950 shrink-0" /> + New Villa / Access
           </button>
           <button
             onClick={() => setShowLocationModal(true)}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
+            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0"
           >
-            <MapPin className="w-3.5 h-3.5 text-amber-400" /> Add Property
+            <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" /> Add Property
           </button>
           <button
             onClick={() => setShowBulkRoomModal(true)}
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md"
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md shrink-0"
           >
-            <Zap className="w-4 h-4 fill-slate-950" /> ⚡ Bulk Generate Rooms
+            <Zap className="w-4 h-4 fill-slate-950 shrink-0" /> ⚡ Bulk Generate Rooms
           </button>
           <button
             onClick={() => setShowSingleRoomModal(true)}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
+            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0"
           >
-            <Plus className="w-3.5 h-3.5 text-emerald-400" /> Add Single Room
+            <Plus className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Add Single Room
           </button>
           <button
             onClick={() => setShowBlockModal(true)}
-            className="bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 font-semibold text-xs px-3.5 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
+            className="bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 font-semibold text-xs px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0"
           >
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> Maintenance Block
+            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" /> Maintenance Block
           </button>
         </div>
       </div>
 
       {/* 120-Room Real-Time Status Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Rooms</p>
-            <p className="text-xl font-bold text-slate-100">{roomStats.total || rooms.length}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 min-w-0">
+        <div className="bg-slate-900/80 border border-slate-800 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 tracking-wider truncate">Total Rooms</p>
+            <p className="text-lg sm:text-xl font-bold text-slate-100">{roomStats.total || rooms.length}</p>
           </div>
-          <Building className="w-5 h-5 text-amber-400" />
+          <Building className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 shrink-0 ml-1" />
         </div>
 
-        <div className="bg-emerald-950/40 border border-emerald-500/30 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Available (Clean)</p>
-            <p className="text-xl font-bold text-emerald-200">{roomStats.available || 0}</p>
+        <div className="bg-emerald-950/40 border border-emerald-500/30 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-emerald-400 tracking-wider truncate">Available</p>
+            <p className="text-lg sm:text-xl font-bold text-emerald-200">{roomStats.available || 0}</p>
           </div>
-          <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400 animate-pulse shrink-0 ml-1" />
         </div>
 
-        <div className="bg-rose-950/40 border border-rose-500/30 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-rose-400 tracking-wider">Occupied</p>
-            <p className="text-xl font-bold text-rose-200">{roomStats.occupied || 0}</p>
+        <div className="bg-rose-950/40 border border-rose-500/30 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-rose-400 tracking-wider truncate">Occupied</p>
+            <p className="text-lg sm:text-xl font-bold text-rose-200">{roomStats.occupied || 0}</p>
           </div>
-          <span className="w-3 h-3 rounded-full bg-rose-400" />
+          <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-400 shrink-0 ml-1" />
         </div>
 
-        <div className="bg-amber-950/40 border border-amber-500/30 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-amber-400 tracking-wider">Cleaning Required</p>
-            <p className="text-xl font-bold text-amber-200">{roomStats.cleaning || 0}</p>
+        <div className="bg-amber-950/40 border border-amber-500/30 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-amber-400 tracking-wider truncate">Cleaning</p>
+            <p className="text-lg sm:text-xl font-bold text-amber-200">{roomStats.cleaning || 0}</p>
           </div>
-          <Sparkles className="w-4 h-4 text-amber-400" />
+          <Sparkles className="w-4 h-4 text-amber-400 shrink-0 ml-1" />
         </div>
 
-        <div className="bg-purple-950/40 border border-purple-500/30 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-purple-400 tracking-wider">Maintenance Block</p>
-            <p className="text-xl font-bold text-purple-200">{roomStats.maintenance || 0}</p>
+        <div className="bg-purple-950/40 border border-purple-500/30 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-purple-400 tracking-wider truncate">Maintenance</p>
+            <p className="text-lg sm:text-xl font-bold text-purple-200">{roomStats.maintenance || 0}</p>
           </div>
-          <AlertTriangle className="w-4 h-4 text-purple-400" />
+          <AlertTriangle className="w-4 h-4 text-purple-400 shrink-0 ml-1" />
         </div>
 
-        <div className="bg-sky-950/40 border border-sky-500/30 p-3.5 rounded-xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] uppercase font-bold text-sky-400 tracking-wider">Reserved / Inbound</p>
-            <p className="text-xl font-bold text-sky-200">{roomStats.reserved || 0}</p>
+        <div className="bg-sky-950/40 border border-sky-500/30 p-2.5 sm:p-3.5 rounded-xl flex items-center justify-between min-w-0">
+          <div className="min-w-0">
+            <p className="text-[9px] sm:text-[10px] uppercase font-bold text-sky-400 tracking-wider truncate">Reserved</p>
+            <p className="text-lg sm:text-xl font-bold text-sky-200">{roomStats.reserved || 0}</p>
           </div>
-          <Clock className="w-4 h-4 text-sky-400" />
+          <Clock className="w-4 h-4 text-sky-400 shrink-0 ml-1" />
         </div>
       </div>
 
       {/* Module Navigation Tabs */}
-      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold overflow-x-auto pb-1">
+      <div className="flex border-b border-slate-800 space-x-2 text-xs font-semibold overflow-x-auto pb-1 max-w-full">
         {[
           { id: 'grid', label: '🎛️ 120-Room Visual Rack (Matrix)', count: filteredRooms.length },
           { id: 'locations', label: '🏨 Locations (Properties)', count: locations.length },
@@ -628,14 +628,14 @@ const VillaRoomManagement = () => {
           <button
             key={tab.id}
             onClick={() => setActiveSubTab(tab.id)}
-            className={`px-4 py-2.5 border-b-2 whitespace-nowrap transition-all flex items-center gap-2 ${
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 border-b-2 whitespace-nowrap transition-all flex items-center gap-1.5 sm:gap-2 shrink-0 ${
               activeSubTab === tab.id
                 ? 'border-amber-400 text-amber-400 bg-slate-900/60 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <span>{tab.label}</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300">
               {tab.count}
             </span>
           </button>
@@ -646,17 +646,17 @@ const VillaRoomManagement = () => {
       {/* TAB 1: 120-ROOM VISUAL RACK (INTERACTIVE HEATMAP & RACK MATRIX) */}
       {/* ========================================================================= */}
       {activeSubTab === 'grid' && (
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           {/* Quick Filters Bar */}
-          <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-            <div className="flex flex-wrap items-center gap-2.5">
+          <div className="bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Location selector */}
-              <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+              <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800 max-w-full">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="bg-transparent text-slate-200 font-semibold focus:outline-none"
+                  className="bg-transparent text-slate-200 font-semibold focus:outline-none text-xs max-w-[180px] sm:max-w-none truncate"
                 >
                   <option value="all" className="bg-slate-900">All Locations (120 Rooms)</option>
                   {locations.map(loc => (
@@ -668,14 +668,14 @@ const VillaRoomManagement = () => {
               </div>
 
               {/* Wing selector */}
-              <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+              <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800">
                 <Layers className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <select
                   value={selectedWing}
                   onChange={(e) => setSelectedWing(e.target.value)}
-                  className="bg-transparent text-slate-200 font-medium focus:outline-none"
+                  className="bg-transparent text-slate-200 font-medium focus:outline-none text-xs"
                 >
-                  <option value="all" className="bg-slate-900">All Wings & Blocks</option>
+                  <option value="all" className="bg-slate-900">All Wings</option>
                   {uniqueWings.map(w => (
                     <option key={w} value={w} className="bg-slate-900">{w}</option>
                   ))}
@@ -683,12 +683,12 @@ const VillaRoomManagement = () => {
               </div>
 
               {/* Status filter buttons */}
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+              <div className="flex flex-wrap items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 max-w-full">
                 {['all', 'Available', 'Occupied', 'Cleaning', 'Maintenance'].map(st => (
                   <button
                     key={st}
                     onClick={() => setSelectedStatus(st)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                    className={`px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-semibold transition-all ${
                       selectedStatus === st
                         ? 'bg-amber-500 text-slate-950 font-bold'
                         : 'text-slate-400 hover:text-slate-200'
@@ -714,19 +714,19 @@ const VillaRoomManagement = () => {
           </div>
 
           {/* 120-Room High-Density Visual Grid */}
-          <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
+          <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-3 sm:p-5 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-4 border-b border-slate-800/80 mb-4 text-xs text-slate-400">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-semibold text-slate-200">
                   Displaying {filteredRooms.length} of {rooms.length} Rooms
                 </span>
-                <span className="text-[10px] text-slate-500">• Click status dropdown on any card to update immediately</span>
+                <span className="text-[10px] text-slate-500 hidden sm:inline">• Click status dropdown on any card to update immediately</span>
               </div>
-              <div className="flex items-center gap-3 text-[11px]">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Available</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-400" /> Occupied</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Cleaning</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-400" /> Maintenance</span>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px]">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0" /> Available</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-400 shrink-0" /> Occupied</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0" /> Cleaning</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-400 shrink-0" /> Maintenance</span>
               </div>
             </div>
 
@@ -739,13 +739,13 @@ const VillaRoomManagement = () => {
                 No rooms match the selected location, wing, or status filter.
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3">
                 {filteredRooms.map((room) => {
                   const badge = getStatusBadge(room.status);
                   return (
                     <div
                       key={room._id}
-                      className="bg-slate-950/80 border border-slate-800/90 hover:border-amber-500/50 rounded-xl p-3 flex flex-col justify-between transition-all group hover:shadow-lg relative overflow-hidden"
+                      className="bg-slate-950/80 border border-slate-800/90 hover:border-amber-500/50 rounded-xl p-2.5 sm:p-3 flex flex-col justify-between transition-all group hover:shadow-lg relative overflow-hidden min-w-0"
                     >
                       {/* Top Bar with Number & Category */}
                       <div>

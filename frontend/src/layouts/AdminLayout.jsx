@@ -223,7 +223,7 @@ const AdminLayout = () => {
       )}
 
       {/* Main ERP Layout Wrapper */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 w-full max-w-full transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
         {/* Top ERP Header Bar */}
         <header className="h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-4">
@@ -310,7 +310,7 @@ const AdminLayout = () => {
         </header>
 
         {/* Main Workspace Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 min-w-0 w-full max-w-full p-3 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
